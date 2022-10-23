@@ -7,7 +7,7 @@ export class Instruccion {
       this.columna = columna;
     }
   
-    interpretar(){
-        throw new Error("Method 'interpretar()' must be implemented.");
+    interpretar(any){
+        throw new Error("Method 'interpretar()' must be implemented. Param: "+any);
     };
 }

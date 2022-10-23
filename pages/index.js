@@ -3,6 +3,7 @@ import ChatBar from "../Components/RecoursesBar";
 import Editor from "../components/Editor"
 import NavBar from "../components/NavBar";
 import Form from 'react-bootstrap/Form';
+import get from 'lodash/get';
 import axios from "axios";
 
 function IndexPage() {
@@ -18,7 +19,7 @@ function IndexPage() {
   const parseCode = (code) => {
     axios.post("/api/parser", {code})
     .then(({ data }) => {
-      console.log(data)
+      console.log(get(data, 'traduction'))
     })
   }
 

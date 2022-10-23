@@ -41,6 +41,7 @@ export default (
   res.status(err.status).json(cleanDeep({
     status: err.status,
     message,
-    errorCodes: get(err, 'errorCodes', get(err, 'code'))
+    errorCodes: get(err, 'errorCodes', get(err, 'code')),
+    err
   }));
 };

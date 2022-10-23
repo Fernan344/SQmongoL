@@ -7,13 +7,13 @@ import errorMidleware from '../../utils/Http/error-handler'
 export default function parse (req, res) {
   try {
     const { code } = req.body;  
-    console.log(code)
     const ast = new Three(parser.parse(code))
     for (let i of ast.getinstrucciones()) {     
       i.interpretar(ast)
     }
-    res.status(200).json([])
+    res.status(200).json({traduction: ast.getTraduction()})
   }catch (err){
+    console.log(err)
     errorMidleware(err, req, res)
   }
 }

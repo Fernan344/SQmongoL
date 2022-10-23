@@ -15,7 +15,7 @@
     "@material-ui/core": "^4.12.4",
     "@monaco-editor/react": "^4.4.6",
     "@mui/icons-material": "^5.10.6",
-    "@mui/material": "^5.10.7",
+    "@mui/material": "^5.10.10",
     "axios": "^0.27.2",
     "bootstrap": "^5.2.1",
     "clean-deep": "^3.4.0",
