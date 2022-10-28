@@ -22,3 +22,19 @@
     padding-right: 30px;
     padding-top: 10px;
 }
+
+.editorsContainer {
+    display: flex;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 10px;
+}
+
+.inputEditor {
+    resize: horizontal;
+    overflow: auto;    
+}
+
+.outputEditor {
+    overflow: auto;
+    grid-row: auto;
+}

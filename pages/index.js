@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import ChatBar from "../Components/RecoursesBar";
 import Editor from "../components/Editor"
 import NavBar from "../components/NavBar";
 import Form from 'react-bootstrap/Form';
+import MonacoEditor from "@monaco-editor/react";
 import get from 'lodash/get';
 import axios from "axios";
 
-function IndexPage() {
-  const [ resources, setResources ] = useState([])
+function IndexPage(props) {
+  const editorRef = useRef(null);
+  const {translateMode, setResources, traduction, setTraduction} = props.states
   
   const getResources = () => {
     axios.get("/api/resources")
@@ -17,11 +19,13 @@ function IndexPage() {
   }
 
   const parseCode = (code) => {
-    axios.post("/api/parser", {code})
+    axios.post("/api/parser", {code, onlyTranslate: !translateMode })
     .then(({ data }) => {
-      console.log(get(data, 'traduction'))
+      setTraduction(get(data, 'traduction'))
     })
   }
+
+  
 
   useEffect(() => {
     getResources()
@@ -29,16 +33,15 @@ function IndexPage() {
 
   return (
     <>
-      <NavBar />
+      <NavBar states={props.states}/>
       <div className="app">             
         <div className="app_body">
-          <ChatBar accounts={resources} getResources={getResources}/> 
-          <Editor onHandleClickParse = {parseCode}/>
+          <ChatBar getResources={getResources} states={props.states}/> 
+          <Editor onHandleClickParse = {parseCode} states={props.states}/>
         </div>       
       </div>
       <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1" style={{paddingTop: "8%"}}>
-          <Form.Label>Example textarea</Form.Label>
-          <Form.Control as="textarea" rows={50} />
+                
       </Form.Group>
     </>
   )

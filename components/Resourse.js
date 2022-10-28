@@ -1,7 +1,5 @@
 import React from "react";
 import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton';
-import SplitButton from 'react-bootstrap/SplitButton';
 import get from "lodash/get"
 
 function Account(props) {

@@ -10,8 +10,9 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 export default function ScrollableTabsButtonVisible(props) {    
-    const { handleTabChange, activeIndex, tabs, handleExtraButton, handleDeleteTabButton } = props
-    const [ myTabs, setMyTabs ] = useState([])    
+    const { handleTabChange, handleExtraButton, handleDeleteTabButton, states } = props
+    const { activeIndex, myTabs, setMyTabs, tabs } = states
+        
     
     useEffect(() => {
         const tabsComponents = tabs.map(tab => <Tab label={tab.title} />)

@@ -17,7 +17,7 @@
     "@mui/icons-material": "^5.10.6",
     "@mui/material": "^5.10.10",
     "axios": "^0.27.2",
-    "bootstrap": "^5.2.1",
+    "bootstrap": "^5.2.2",
     "clean-deep": "^3.4.0",
     "http-status-codes": "^2.2.0",
     "jison": "^0.4.18",

@@ -5,7 +5,7 @@ import Modal from 'react-bootstrap/Modal';
 import ConnectionCard from './ConnectionCard';
 
 function CModal(props) {
-    const [ connections, setConnections ] = useState([])
+    const {connections, setConnections} = props.states
 
     useEffect(() => {
         axios.get("/api/connections").then(({data}) => {

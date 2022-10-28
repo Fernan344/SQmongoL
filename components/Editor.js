@@ -1,26 +1,15 @@
-import React, { useState, useRef, useEffect  } from "react";
+import React, { useRef, useEffect  } from "react";
 import Editor from "@monaco-editor/react";
 import ActionsBar from "./ActiosnsBar"
 import FilesBar from "./FIlesBar"
+import { textDefaultNewTab, makeData } from '../utils/config/default'
 
-const textDefaultNewTab = `// Type here your SQML queries`
-
-const makeData = (number) => {
-    const data = [];
-    for (let i = 0; i < number; i++) {
-      data.push({
-        title: `New File *`,
-        content: textDefaultNewTab
-      });
-    }
-    return data;
-}
-
-function Chat(props) {
+function EditorCustom(props) {
     const editorRef = useRef(null);
-    const [ text, setText ] = useState(textDefaultNewTab);
-    const [ tabs, setTabs ] = useState(makeData(1));
-    const [ activeIndex, setActiveIndex ] = useState(0);
+    const traductionRef = useRef(null);
+    const {
+        text, tabs, activeIndex, setActiveIndex, setText, setTabs, setEditor, traduction, setTraduction
+    } = props.states
 
     useEffect(() => {
         if(activeIndex === -1){
@@ -48,6 +37,10 @@ function Chat(props) {
         editorRef.current = editor;
     }
 
+    const traductionEditorDidMount = (editor, monaco) => {
+        traductionRef.current = editor;
+    }
+
     const handleChangeCode = (evt) => {
         setText(evt)
     }
@@ -67,36 +60,58 @@ function Chat(props) {
         setActiveIndex(activeIndex  - 1)
     }
 
+    const handleResizeEditor = (e) => {
+        console.log(e)
+    }
+
     return(
         <div className="chat"> 
             <div className="chad-header">      
                 <FilesBar 
-                    tabs = {tabs}
                     handleExtraButton = {handleExtraButton}
                     handleTabChange = {handleTabChange}
                     handleDeleteTabButton = {handleDeleteTabButton}
-                    activeIndex = {activeIndex}
+                    states = {props.states}
                 />          
-                <ActionsBar onClickGetSelected={handleClickGetSelected} onClickGetText={handleClickGetAll}/>
+                <ActionsBar onClickGetSelected={handleClickGetSelected} onClickGetText={handleClickGetAll} states = {props.states}/>
             </div>    
             <div className="chat-body">
-                <Editor
-                    ref={(editor) => {
-                        setEditor(editor); // keep the reference here.
-                    }}
-                    height="90vh"
-                    width="80vw"
-                    language={"sql"}
-                    className="code-container"
-                    theme="vs-dark"
-                    onMount={editorDidMount}
-                    onChange={handleChangeCode}
-                    value={text}
-                    defaultValue="// Type here your SQML queries"
-                ></ Editor>              
+                <div className="editorsContainer" style={{maxWidth: "80vw", maxHeight: "90vh"}}>
+                    <div className="inputEditor" style={{width: "100%"}} onResize={handleResizeEditor}>
+                        <Editor
+                            ref={(editor) => {
+                                setEditor(editor); // keep the reference here.
+                            }}
+                            height="90vh"
+                            width="100%"
+                            language={"sql"}
+                            className="code-container"
+                            theme="vs-dark"
+                            onMount={editorDidMount}
+                            onChange={handleChangeCode}
+                            value={text}
+                            defaultValue="// Type here your SQML queries"
+                        ></ Editor>     
+                    </div>
+                    <div className="outputEditor" style={{width: "100%"}}>
+                        <Editor
+                            ref={(editor) => {
+                                setEditor(editor); // keep the reference here.
+                            }}
+                            height="90vh"
+                            width="100%"
+                            language={"javascript"}
+                            className="code-container"
+                            theme="vs-dark"
+                            onMount={traductionEditorDidMount}
+                            value={traduction}
+                            defaultValue=""
+                        ></ Editor>      
+                    </div>  
+                </div>   
             </div>
         </div>
     )
 }
 
-export default Chat;
+export default EditorCustom;

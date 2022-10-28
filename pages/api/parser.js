@@ -6,7 +6,8 @@ import errorMidleware from '../../utils/Http/error-handler'
 
 export default function parse (req, res) {
   try {
-    const { code } = req.body;  
+    const { code, onlyTranslate } = req.body;  
+    console.log(onlyTranslate)
     const ast = new Three(parser.parse(code))
     for (let i of ast.getinstrucciones()) {     
       i.interpretar(ast)

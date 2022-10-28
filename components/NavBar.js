@@ -6,7 +6,7 @@ import Container from 'react-bootstrap/Container';
 import Modal from './Modal';
 
 function NavBar(props) {
-    const [modalShow, setModalShow] = useState(false)
+    const {modalShow, setModalShow} = props.states;
 
     return(
       <>
@@ -36,7 +36,8 @@ function NavBar(props) {
               </div>
             } 
             show={modalShow} 
-            onHide = {()=>setModalShow(false)}           
+            onHide = {()=>setModalShow(false)}    
+            states = {props.states}       
         />
       </>
     )
