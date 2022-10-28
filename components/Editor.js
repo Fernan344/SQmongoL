@@ -76,8 +76,8 @@ function EditorCustom(props) {
                 <ActionsBar onClickGetSelected={handleClickGetSelected} onClickGetText={handleClickGetAll} states = {props.states}/>
             </div>    
             <div className="chat-body">
-                <div className="editorsContainer" style={{maxWidth: "80vw", maxHeight: "90vh"}}>
-                    <div className="inputEditor" style={{width: "100%"}} onResize={handleResizeEditor}>
+                <div className="editorsContainer" >
+                    <div className="inputEditor" style={{width: "40vw"}} >
                         <Editor
                             ref={(editor) => {
                                 setEditor(editor); // keep the reference here.
@@ -93,7 +93,7 @@ function EditorCustom(props) {
                             defaultValue="// Type here your SQML queries"
                         ></ Editor>     
                     </div>
-                    <div className="outputEditor" style={{width: "100%"}}>
+                    <div className="outputEditor" style={{width: "40vw"}}>
                         <Editor
                             ref={(editor) => {
                                 setEditor(editor); // keep the reference here.
