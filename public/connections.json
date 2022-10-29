@@ -1,0 +1,6 @@
+[
+    {
+        "name":"MyFirstConnection",
+        "uri":"mongodb://root:root@localhost:27017"
+    }
+]
