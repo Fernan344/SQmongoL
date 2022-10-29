@@ -1,4 +1,4 @@
-import React, { useRef, useEffect  } from "react";
+import React, { useRef, useEffect, useState  } from "react";
 import Editor from "@monaco-editor/react";
 import ActionsBar from "./ActiosnsBar"
 import FilesBar from "./FIlesBar"
@@ -7,6 +7,7 @@ import { textDefaultNewTab, makeData } from '../utils/config/default'
 function EditorCustom(props) {
     const editorRef = useRef(null);
     const traductionRef = useRef(null);
+    const [ isHandlerDragging, setHandlerDragging ] = useState(false);
     const {
         text, tabs, activeIndex, setActiveIndex, setText, setTabs, setEditor, traduction, setTraduction
     } = props.states
@@ -18,6 +19,21 @@ function EditorCustom(props) {
             handleTabChange(undefined, tabs.length - 1)
         }
     }, [tabs])
+
+    useEffect(() => {
+        document.addEventListener('mousedown', function(e) {
+            
+        });
+
+        document.addEventListener('mousemove', function(e) {
+            
+        });
+
+        document.addEventListener('mouseup', function(e) {
+            // Turn off dragging flag when user mouse is up
+            
+        });
+    }, [])
 
     const handleTabChange = (evt, newValue, onDelete = false) => {  
         if(!onDelete) tabs[activeIndex].content = text
@@ -60,12 +76,49 @@ function EditorCustom(props) {
         setActiveIndex(activeIndex  - 1)
     }
 
-    const handleResizeEditor = (e) => {
-        console.log(e)
+    const handlerMouseMove = (e) => {
+        var handler = document.querySelector('.handler');
+        var wrapper = handler.closest('.wrapper');
+        var boxA = wrapper.querySelector('.boxA');
+        var boxB = wrapper.querySelector('.boxB');
+        // Don't do anything if dragging flag is false
+        if (!isHandlerDragging) {
+            return false;
+        }
+        
+        // Get offset
+        var containerOffsetLeft = wrapper.offsetLeft;
+        
+        // Get x-coordinate of pointer relative to container
+        var pointerRelativeXpos = e.clientX - containerOffsetLeft;
+        
+        // Arbitrary minimum width set on box A, otherwise its inner content will collapse to width of 0
+        var boxAminWidth = 60;
+        
+        // Resize box A
+        // * 8px is the left/right spacing between .handler and its inner pseudo-element
+        // * Set flex-grow to 0 to prevent it from growing
+        boxA.style.width = (Math.max(boxAminWidth, pointerRelativeXpos - 8)) + 'px';
+        const boxBWidth = 1100 - boxA.style.width.split("px")[0];
+        console.log(boxBWidth)
+        boxB.style.width = boxBWidth + 'px';
+        boxA.style.flexGrow = 0;
+    }
+
+    const handlerMouseUp = (e) => {
+        setHandlerDragging(false);
+    }
+
+    const handlerMouseDown = (e) => {
+        var handler = document.querySelector('.handler');
+        // If mousedown event is fired from .handler, toggle flag to true
+        if (e.target === handler) {
+            setHandlerDragging(true);
+        }
     }
 
     return(
-        <div className="chat"> 
+        <div className="chat" onMouseMove={handlerMouseMove} onMouseUp={handlerMouseUp} onMouseDown={handlerMouseDown}> 
             <div className="chad-header">      
                 <FilesBar 
                     handleExtraButton = {handleExtraButton}
@@ -75,9 +128,9 @@ function EditorCustom(props) {
                 />          
                 <ActionsBar onClickGetSelected={handleClickGetSelected} onClickGetText={handleClickGetAll} states = {props.states}/>
             </div>    
-            <div className="chat-body">
-                <div className="editorsContainer" >
-                    <div className="inputEditor" style={{width: "40vw"}} >
+            <div className="chat-body" style={{maxWidth: "1100px"}}>
+                <div className="wrapper">
+                    <div className="boxA">
                         <Editor
                             ref={(editor) => {
                                 setEditor(editor); // keep the reference here.
@@ -93,7 +146,8 @@ function EditorCustom(props) {
                             defaultValue="// Type here your SQML queries"
                         ></ Editor>     
                     </div>
-                    <div className="outputEditor" style={{width: "40vw"}}>
+                    <div className="handler"></div>
+                    <div className="boxB">
                         <Editor
                             ref={(editor) => {
                                 setEditor(editor); // keep the reference here.
