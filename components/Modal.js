@@ -15,7 +15,7 @@ function CModal(props) {
         })
     }, [])
 
-    const cards = connections.map((con)=><ConnectionCard name={con.name} uri={con.uri} onSuccess={props.onHide}/>)
+    const cards = connections.map((con, index)=><ConnectionCard key={`conCard${index}`} name={con.name} uri={con.uri} onSuccess={props.onHide}/>)
 
     return (
         <>            

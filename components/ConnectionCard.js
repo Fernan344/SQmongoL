@@ -18,7 +18,7 @@ function ConnectionCard(props) {
     }
 
     return (
-        <Card>
+        <Card key={props.key}>
             <Card.Header as="h5">{props.name}</Card.Header>
             <Card.Body>
                 <Card.Title>{""}</Card.Title>
