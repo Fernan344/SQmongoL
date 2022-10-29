@@ -15,7 +15,7 @@ export default function ScrollableTabsButtonVisible(props) {
         
     
     useEffect(() => {
-        const tabsComponents = tabs.map(tab => <Tab label={tab.title} />)
+        const tabsComponents = tabs.map((tab, index) => <Tab label={tab.title} key={`tabComp${index}`}/>)
         setMyTabs(tabsComponents)
     }, [tabs])
     
