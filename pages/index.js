@@ -1,14 +1,12 @@
 import React, { useEffect, useRef } from "react";
-import ChatBar from "../Components/RecoursesBar";
+import ChatBar from "../components/RecoursesBar";
 import Editor from "../components/Editor"
 import NavBar from "../components/NavBar";
 import Form from 'react-bootstrap/Form';
-import MonacoEditor from "@monaco-editor/react";
 import get from 'lodash/get';
 import axios from "axios";
 
 function IndexPage(props) {
-  const editorRef = useRef(null);
   const {translateMode, setResources, traduction, setTraduction} = props.states
   
   const getResources = () => {
@@ -23,9 +21,7 @@ function IndexPage(props) {
     .then(({ data }) => {
       setTraduction(get(data, 'traduction'))
     })
-  }
-
-  
+  }  
 
   useEffect(() => {
     getResources()
@@ -40,9 +36,6 @@ function IndexPage(props) {
           <Editor onHandleClickParse = {parseCode} states={props.states}/>
         </div>       
       </div>
-      <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1" style={{paddingTop: "8%"}}>
-                
-      </Form.Group>
     </>
   )
 }
