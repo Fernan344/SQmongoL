@@ -1,19 +1,26 @@
 import axios from 'axios';
+import { withSnackbar } from 'notistack';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
+import get from 'lodash/get';
 
 function ConnectionCard(props) {
+    const {setDbs} = props.states
+
     const handlerConnect = () => {
-        axios.post('/api/connect', {uri: props.uri})
+        axios.patch('/api/connect', {uri: props.uri})
         .then((response) => {
-            if(response.status === 200) {
+            axios.get('/api/connect')
+            .then((response) => {
                 props.onSuccess()
-            }else{
-                alert('Error: ' + response.status)
-            }
+                props.enqueueSnackbar('Connection established successfuly', {variant: "success"})
+                setDbs(get(response, 'data.databases'))
+            }).catch((err) => {
+                props.enqueueSnackbar(get(err, 'message', `Connection can not get Databases`), {variant: "error"})
+            })
         })
         .catch((err) => {
-            alert('Error: ' + err)
+            props.enqueueSnackbar(get(err, 'message', `Connection can not be established`), {variant: "error"})
         })
     }
 
@@ -26,11 +33,11 @@ function ConnectionCard(props) {
                     {props.uri}
                 </Card.Text>
                 <Button variant="success" onClick={handlerConnect}>Connect</Button>
-                <Button variant="warning">Edit</Button>
+                <Button variant="warning" onClick={()=>props.enqueueSnackbar(`You are editing \"${props.name}\"`, {variant: "warning"})}>Edit</Button>
                 <Button variant="danger">Delete</Button>
             </Card.Body>
         </Card>
     );
 }
 
-export default ConnectionCard;
+export default withSnackbar(ConnectionCard);

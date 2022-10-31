@@ -13,9 +13,24 @@
     color: rgb(0, 0, 0);
 }
 
+.dbsBar {
+    flex: 1;
+    height: 15vh;
+    overflow-y: scroll;
+}
+
+.dbsBar::-webkit-scrollbar {
+    display: none;
+}
+
+.dbsBar {
+    -ms-overflow-style: none;
+    scrollbar-width: 5px;
+}
+
 .chatBar_chats {
     flex: 1;
-    height: 85vh;
+    height: 60vh;
     overflow-y: scroll;
 }
 

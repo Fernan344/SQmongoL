@@ -1,42 +1,33 @@
-import React, {useEffect,useState} from 'react';
-import axios from 'axios';
-import Button from 'react-bootstrap/Button';
+import React, {useEffect} from 'react';
 import Modal from 'react-bootstrap/Modal';
-import ConnectionCard from './ConnectionCard';
 
 function CModal(props) {
-    const {connections, setConnections} = props.states
+    const { modalBody, modalTitle, modalFooter, componentDidMount, show, onHide } = props;
 
     useEffect(() => {
-        axios.get("/api/connections").then(({data}) => {
-            setConnections(data)
-        }).catch((error) => {
-            setConnections([])            
-        })
+        componentDidMount()
     }, [])
 
-    const cards = connections.map((con, index)=><ConnectionCard key={`conCard${index}`} name={con.name} uri={con.uri} onSuccess={props.onHide}/>)
+    const body = modalBody()
 
     return (
         <>            
             <Modal
-                {...props}
+                {...{show, onHide}}
                 size="lg"
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
                 >
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter">
-                    Connections
+                    {modalTitle}
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {
-                        cards
-                    }
+                    {body}
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button onClick={props.onHide}>Close</Button>
+                    {modalFooter}
                 </Modal.Footer>
             </Modal>
         </>

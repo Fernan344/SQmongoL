@@ -4,8 +4,10 @@ import '../styles/Components/Account.css'
 import '../styles/Components/Editor.css'
 import '../styles/Components/ActionBar.css'
 import '../styles/Pages/Index.css'
+import '../styles/Components/DBCard.css'
 import '../styles/Components/SwitchButton.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
+import React from 'react';
 import { useSQML } from '../hooks/useSQML'
 
 function MyApp({ Component, pageProps }) {
@@ -13,4 +15,4 @@ function MyApp({ Component, pageProps }) {
   return <Component {...pageProps} states = {state}/>
 }
 
-export default MyApp
+export default MyApp;

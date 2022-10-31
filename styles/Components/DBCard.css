@@ -1,0 +1,37 @@
+@import url("https://fonts.googleapis.com/css?family=Roboto:400,400i,700");
+.DBcard {
+    position: absolute;    
+    display: flex;
+    position: relative;
+    border: none;
+    max-width: 100%;
+    width: 100%;
+    max-height: 4rem;
+}
+.DBcard > div {
+	 transition: 0.3s all ease-in-out;
+	 display: flex;
+	 align-items: center;
+     margin: 1px;
+     border: none;
+}
+.DBcard .dbActionButton {
+    background-color: rgb(255, 255, 255);
+    color: rgb(0, 0, 0); 
+    box-shadow: 5px 0px 12px -4px rgba(0, 0, 0, 0.5);
+    z-index: 1;
+    border: none;
+}
+.DBcard .dbTitleCard {
+	 background-color: #0b95a1;
+     border-radius: 0.5rem;
+	 color: rgb(228, 228, 228);
+     width: 100%;
+     justify-content: left;
+     border: none;
+}
+
+.DBcard .dbTitleCard .textTitle {
+    margin-left: 1rem;
+}
+ 

@@ -3,10 +3,6 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import get from "lodash/get"
 
 function Account(props) {
-    function change(){
-        props.change(props.room, props.id)
-    }
-//{get(props, 'message', '')}
     return(
         <div className="chatPersonal">
             <Dropdown style={{width: '100%'}}>
@@ -15,7 +11,7 @@ function Account(props) {
                 </Dropdown.Toggle>
 
                 <Dropdown.Menu>
-                    <Dropdown.Item href="#/action-1">Actions</Dropdown.Item>
+                    <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
                     <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
                     <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
                 </Dropdown.Menu>

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { textDefaultNewTab, makeData, translateModes } from '../utils/config/default'
+import axios from 'axios'
 
 export const useSQML = () => {
     const [ resources, setResources ] = useState([])
@@ -11,6 +12,15 @@ export const useSQML = () => {
     const [ modalShow, setModalShow] = useState(false)
     const [ translateMode, setTranslateMode ] = useState(translateModes.OnlyTranslate)
     const [ traduction, setTraduction ] = useState("");
+    const [ modalNewConnectionShow, setModalNewConnectionShow ] = useState(false)
+    const [ dbs, setDbs ] = useState([])
+
+    const getResources = () => {
+        axios.get("/api/resources")
+        .then(({ data }) => {
+          setResources(data)
+        })
+      }
 
     return {
         resources,
@@ -20,8 +30,10 @@ export const useSQML = () => {
         myTabs,
         connections,
         modalShow,
+        modalNewConnectionShow,
         translateMode,
         traduction,
+        dbs,
         setResources,
         setText,
         setTabs,
@@ -29,7 +41,10 @@ export const useSQML = () => {
         setMyTabs,
         setConnections,
         setModalShow,
+        setModalNewConnectionShow,
         setTranslateMode,
-        setTraduction
+        setTraduction,
+        setDbs,
+        getResources
     }
 }

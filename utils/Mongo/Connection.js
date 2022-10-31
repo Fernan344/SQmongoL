@@ -2,7 +2,6 @@ import { MongoClient } from 'mongodb'
 
 
 // Create a new MongoClient
-let uriConnect = undefined
 let client = undefined;
 let db = undefined;
 
@@ -10,9 +9,27 @@ export const connect = async function(uri){
   try{
       client = new MongoClient(uri);
       await client.connect();
-      return {isConnected: true, connection: client, msg: "Database Connected!!!"}
+      return {success: true, connection: client}
   }catch(e){
-      return {isConnected: false, connection: null, msg: "Error In Connection!!!"}
+      return {success: false, connection: null, msg: "Error In Connection!!!"}
+  }
+}
+
+export const testConnection = async (uri) => {
+  try {
+    await (new MongoClient(uri)).connect();
+    return {success: true}
+  }catch (e) {
+    return {error: e}
+  }
+}
+
+export const getDBList = async () => {
+  try {
+    const dbs = await client.db("admin").admin().listDatabases()
+    return {dbs}
+  }catch (e) {
+    return {error: e}
   }
 }
 
@@ -32,9 +49,4 @@ export const getDB = () => {
 
 export const getConnection = async () => {
   return client
-}
-
-export const getConnectionsData = async () => {
-  const connections = require('../../public/connections.json')
-  return connections
 }
