@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import ResoursesBar from "../components/RecoursesBar";
+import Loader from "../components/Loader"
 import Editor from "../components/Editor"
 import NavBar from "../components/NavBar";
 import get from 'lodash/get';
@@ -7,14 +8,16 @@ import axios from "axios";
 import { SnackbarProvider } from "notistack"
 
 function IndexPage(props) {
-  const {translateMode, getResources, setTraduction} = props.states
+  const {translateMode, getResources, setTraduction, charge, setCharge} = props.states
   
   
 
   const parseCode = (code) => {
+    setCharge(true)
     axios.post("/api/parser", {code, onlyTranslate: !translateMode })
     .then(({ data }) => {
       setTraduction(get(data, 'traduction'))
+      setCharge(false)
     })
   }  
 
@@ -31,6 +34,9 @@ function IndexPage(props) {
           <Editor onHandleClickParse = {parseCode} states={props.states}/>
         </div>       
       </div>
+      {charge && <div className="component-charge">
+        <Loader></Loader>
+      </div>}
     </>
   )
 }

@@ -13,6 +13,7 @@ export const useSQML = () => {
     const [ translateMode, setTranslateMode ] = useState(translateModes.OnlyTranslate)
     const [ traduction, setTraduction ] = useState("");
     const [ modalNewConnectionShow, setModalNewConnectionShow ] = useState(false)
+    const [ charge, setCharge ] = useState(false)
     const [ dbs, setDbs ] = useState([])
 
     const getResources = () => {
@@ -34,6 +35,7 @@ export const useSQML = () => {
         translateMode,
         traduction,
         dbs,
+        charge,
         setResources,
         setText,
         setTabs,
@@ -45,6 +47,7 @@ export const useSQML = () => {
         setTranslateMode,
         setTraduction,
         setDbs,
-        getResources
+        getResources,
+        setCharge
     }
 }

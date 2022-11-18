@@ -5,22 +5,28 @@ import Card from 'react-bootstrap/Card';
 import get from 'lodash/get';
 
 function ConnectionCard(props) {
-    const {setDbs} = props.states
+    const {setDbs, charge, setCharge} = props.states
 
     const handlerConnect = () => {
+        setCharge(true)
         axios.patch('/api/connect', {uri: props.uri})
         .then((response) => {
+            console.log(response)
             axios.get('/api/connect')
             .then((response) => {
                 props.onSuccess()
                 props.enqueueSnackbar('Connection established successfuly', {variant: "success"})
-                setDbs(get(response, 'data.databases'))
+                setDbs(get(response, 'data.databases', []))
+                setCharge(false)
             }).catch((err) => {
                 props.enqueueSnackbar(get(err, 'message', `Connection can not get Databases`), {variant: "error"})
+                setCharge(false)
             })
         })
         .catch((err) => {
-            props.enqueueSnackbar(get(err, 'message', `Connection can not be established`), {variant: "error"})
+            setDbs([])
+            setCharge(false)
+            props.enqueueSnackbar(get(err, 'response.data.message', `Connection can not be established`), {variant: "error"})
         })
     }
 

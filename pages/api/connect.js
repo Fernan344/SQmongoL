@@ -1,12 +1,12 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { createDB, connect, testConnection, getDBList } from "../../utils/Mongo/Connection"
+import { createDB, connect, testConnection, getDBList } from "../../config/Mongo/Connection"
 import get from "lodash/get"
 import { HttpMidleware } from "../../utils/Http/Middleware";
 import { StatusCodes } from "http-status-codes";
 import errorMidleware from '../../utils/Http/error-handler'
 import { HttpStatusCodeError } from "../../utils/Http/HttpStatusCodeError";
 
-
+// test conections
 const POST = async (req, res) => {
     const { uri } = req.body 
     const response = await testConnection(uri)
@@ -14,6 +14,7 @@ const POST = async (req, res) => {
     throw new HttpStatusCodeError(StatusCodes.BAD_REQUEST, 'Connection can not be established')
 }
 
+// create new connections
 const PATCH = async (req, res) => {
     const { uri } = req.body 
     const response = await connect(uri)
@@ -21,6 +22,7 @@ const PATCH = async (req, res) => {
     throw new HttpStatusCodeError(StatusCodes.BAD_REQUEST, 'Connection can not be established')    
 }
 
+// create new database connection
 const PUT = async (req, res) => {
     const { dbName } = req.body
     const result = await createDB(dbName)
@@ -33,6 +35,7 @@ const PUT = async (req, res) => {
     }
 }
 
+// get db list
 const GET = async (req, res) => {
     const response = await getDBList();
     res.status(StatusCodes.OK).json(get(response, 'dbs', []))

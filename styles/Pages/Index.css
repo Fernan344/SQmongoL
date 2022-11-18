@@ -5,6 +5,16 @@
     overflow-x: none;
 }
 
+.component-charge {
+    position: fixed;
+    display: flex;
+    scroll-behavior: auto;
+    z-index: 999999;
+    left: 73rem;
+    top: 32rem;
+    transform: translate(-50%, -50%);
+}
+
 .app_body {
     display: flex;
     background-color: #ffffff;  

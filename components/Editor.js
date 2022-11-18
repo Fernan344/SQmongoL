@@ -100,7 +100,6 @@ function EditorCustom(props) {
         // * Set flex-grow to 0 to prevent it from growing
         boxA.style.width = (Math.max(boxAminWidth, pointerRelativeXpos - 8)) + 'px';
         const boxBWidth = 1100 - boxA.style.width.split("px")[0];
-        console.log(boxBWidth)
         boxB.style.width = boxBWidth + 'px';
         boxA.style.flexGrow = 0;
     }
