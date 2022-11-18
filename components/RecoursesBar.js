@@ -14,7 +14,7 @@ function ChatBar(props) {
             </div>
             <div className="dbsBar">
                 {
-                    dbs.map(db => {
+                    (dbs||[]).map(db => {
                         return <BaseDatos states = {props.states} key="" message={get(db, 'name')}/>
                     })
                 }

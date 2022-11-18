@@ -2,7 +2,7 @@ import { MongoClient } from 'mongodb'
 
 
 // Create a new MongoClient
-let client = undefined;
+var client = undefined;
 let db = undefined;
 
 export const connect = async function(uri){
