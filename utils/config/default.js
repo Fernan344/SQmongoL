@@ -6,6 +6,23 @@ SELECT campo1 FROM tabla1;
 
 SELECT campo1, campo2 FROM tabla1;
 
+SELECT * FROM tabla1
+WHERE campo1 IS NOT NULL;
+
+SELECT * FROM tabla1
+WHERE campo1 IS NOT NULL OR campo2 = 0;
+
+SELECT * FROM tabla1
+WHERE campo1 IS NOT NULL OR 
+        (campo2 = 0 AND campo3 <> 16);
+
+SELECT * FROM tabla1
+WHERE campo1 IS NOT NULL OR 
+        campo2 = 0 OR (campo3 = 1 AND campo4 <> 16);
+
+SELECT * FROM tabla1
+WHERE campo1 IS NULL;
+
 SELECT campo1, campo2 FROM tabla1
 WHERE campo1 = false 
         AND campo2 > 5 
