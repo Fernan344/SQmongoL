@@ -7,11 +7,12 @@ import { withSnackbar } from "notistack";
 
 function BaseDatos(props) {
 
-    const {getResources} = props.states;
+    const {getResources, setMyDB, myURI} = props.states;
 
     const handleUpdateDataBase = () => {
-        axios.put('/api/connect', {dbName: get(props, 'message', '')})
+        axios.put('/api/connect', {dbName: get(props, 'message', ''), uri: myURI})
         .then((response) => {
+            setMyDB(get(props, 'message', ''))
             getResources();
             props.enqueueSnackbar(`DB was changed to ${get(props, 'message', '')}`, {variant: "warning"})
         })

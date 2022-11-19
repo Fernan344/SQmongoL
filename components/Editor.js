@@ -9,7 +9,7 @@ function EditorCustom(props) {
     const traductionRef = useRef(null);
     const [ isHandlerDragging, setHandlerDragging ] = useState(false);
     const {
-        text, tabs, activeIndex, setActiveIndex, setText, setTabs, setEditor, traduction, setTraduction
+        text, tabs, activeIndex, setActiveIndex, setText, setTabs, setEditor, traduction, parseCode
     } = props.states
 
     useEffect(() => {
@@ -20,21 +20,6 @@ function EditorCustom(props) {
         }
     }, [tabs])
 
-    useEffect(() => {
-        document.addEventListener('mousedown', function(e) {
-            
-        });
-
-        document.addEventListener('mousemove', function(e) {
-            
-        });
-
-        document.addEventListener('mouseup', function(e) {
-            // Turn off dragging flag when user mouse is up
-            
-        });
-    }, [])
-
     const handleTabChange = (evt, newValue, onDelete = false) => {  
         if(!onDelete) tabs[activeIndex].content = text
         setActiveIndex(newValue);
@@ -42,11 +27,11 @@ function EditorCustom(props) {
     }
 
     const handleClickGetAll = (e) => {
-        props.onHandleClickParse(text)
+        parseCode(text)
     }
 
     const handleClickGetSelected = (e) => {
-        console.log(editorRef.current.getModel().getValueInRange(editorRef.current.getSelection()));
+        parseCode(editorRef.current.getModel().getValueInRange(editorRef.current.getSelection()));
     }
 
     const editorDidMount = (editor, monaco) => {
