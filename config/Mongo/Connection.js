@@ -24,8 +24,9 @@ export const testConnection = async (uri) => {
   }
 }
 
-export const getDBList = async () => {
+export const getDBList = async (uri) => {
   try {
+    !client && (client = new MongoClient(uri))
     const dbs = await client.db("admin").admin().listDatabases()
     return {dbs}
   }catch (e) {
@@ -33,8 +34,9 @@ export const getDBList = async () => {
   }
 }
 
-export const createDB = async (name) => {
+export const createDB = async (name, uri) => {
   try {
+    !client && (client = new MongoClient(uri))
     client.db(name).command({ping: 1})
     db = client.db(name)
     return {success: true}

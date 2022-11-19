@@ -8,18 +8,11 @@ import axios from "axios";
 import { SnackbarProvider } from "notistack"
 
 function IndexPage(props) {
-  const {translateMode, getResources, setTraduction, charge, setCharge} = props.states
+  const {getResources, charge} = props.states
   
   
 
-  const parseCode = (code) => {
-    setCharge(true)
-    axios.post("/api/parser", {code, onlyTranslate: !translateMode })
-    .then(({ data }) => {
-      setTraduction(get(data, 'traduction'))
-      setCharge(false)
-    })
-  }  
+    
 
   useEffect(() => {
     getResources()
@@ -31,7 +24,7 @@ function IndexPage(props) {
       <div className="app">             
         <div className="app_body">
           <ResoursesBar states={props.states}/> 
-          <Editor onHandleClickParse = {parseCode} states={props.states}/>
+          <Editor states={props.states}/>
         </div>       
       </div>
       {charge && <div className="component-charge">

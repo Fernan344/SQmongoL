@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { textDefaultNewTab, makeData, translateModes } from '../utils/config/default'
 import axios from 'axios'
+import get from 'lodash/get'
 
 export const useSQML = () => {
     const [ resources, setResources ] = useState([])
@@ -15,13 +16,24 @@ export const useSQML = () => {
     const [ modalNewConnectionShow, setModalNewConnectionShow ] = useState(false)
     const [ charge, setCharge ] = useState(false)
     const [ dbs, setDbs ] = useState([])
+    const [myURI, setMyURI] = useState("");
+    const [myDB, setMyDB] = useState("");
 
     const getResources = () => {
-        axios.get("/api/resources")
+      axios.post("/api/resources", {db: myDB, uri: myURI})
         .then(({ data }) => {
           setResources(data)
-        })
-      }
+      })
+    }
+    
+    const parseCode = (code) => {
+      setCharge(true)
+      axios.post("/api/parser", {code, onlyTranslate: !translateMode })
+      .then(({ data }) => {
+        setTraduction(get(data, 'traduction'))
+        setCharge(false)
+      })
+    }
 
     return {
         resources,
@@ -36,6 +48,9 @@ export const useSQML = () => {
         traduction,
         dbs,
         charge,
+        myURI,
+        myDB,
+        parseCode,
         setResources,
         setText,
         setTabs,
@@ -48,6 +63,8 @@ export const useSQML = () => {
         setTraduction,
         setDbs,
         getResources,
-        setCharge
+        setCharge,
+        setMyURI,
+        setMyDB
     }
 }

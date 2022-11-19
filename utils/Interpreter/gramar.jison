@@ -24,7 +24,6 @@
 "TRUE"                                                      return 'RESTRUE';   
 "FALSE"                                                     return 'RESFALSE';
 "IS"                                                        return 'RESIS';
-"NOT"                                                       return 'RESNOT';
 "NULL"                                                      return 'RESNULL';                                           
 
 "CREATE"                                                    return 'RESCREATE';
@@ -32,16 +31,18 @@
 "VALUES"                                                    return 'RESVALUES';
 
 "AND"                                                       return 'RESAND';
+"NOT"                                                       return 'RESNOT';
+"OR"                                                        return 'RESOR';
 
 "*"                                                         return 'ASTERISCO';
 
 "="                                                         return 'EQUALSTO';       
 "!="                                                        return 'NOTEQUALSTO';    
-">"                                                         return 'GREATERTHAN';
-"<"                                                         return 'LESSTHAN';
+"<>"                                                        return 'DIFERENTTO';  
 ">="                                                        return 'GREATEREQUALSTHAN';
 "<="                                                        return 'LESSEQUALSTHAN';
-"<>"                                                        return 'DIFERENTTO';  
+">"                                                         return 'GREATERTHAN';
+"<"                                                         return 'LESSTHAN';
 
 "{"                                                         return 'LLAVEIZQ';
 "}"                                                         return 'LLAVEDER';
@@ -70,7 +71,8 @@
 
 %left 'SUMA' 'RESTA'
 %left 'MULTIPLICACION' 'DIVIDIDO'
-%left UNEGATION
+%right UNEGATION 'RESNOT'
+%left 'RESOR'
 %left 'RESAND'
 
 %start INIT
@@ -146,8 +148,6 @@ RELATIONALOPERATIONS:
     EQUALSTO                                                {$$ = relacional.tipoOp.EQUALS;}
     | NOTEQUALSTO                                           {$$ = relacional.tipoOp.NOTEQUALSTO;}
     | DIFERENTTO                                            {$$ = relacional.tipoOp.DIFERENTTO;}
-    | RESIS RESNOT RESNULL                                  {$$ = relacional.tipoOp.ISNOTNULL;}
-    | RESIS RESNULL                                         {$$ = relacional.tipoOp.ISNULL;}
     | GREATERTHAN                                           {$$ = relacional.tipoOp.GREATERTHAN;}
     | GREATEREQUALSTHAN                                     {$$ = relacional.tipoOp.GREATEREQUALSTHAN;}
     | LESSTHAN                                              {$$ = relacional.tipoOp.LESSTHAN;}
@@ -156,14 +156,18 @@ RELATIONALOPERATIONS:
 
 RELAEXPRESION:
     JSONKEY RELATIONALOPERATIONS ARITEXPRESION              {$$ = new relacional.default($2, $1, $3, @1.first_line, @1.first_column);}           
+    | JSONKEY RESIS RESNOT RESNULL                          {$$ = new relacional.default(relacional.tipoOp.ISNOTNULL, $1, undefined, @1.first_line, @1.first_column);}
+    | JSONKEY RESIS RESNULL                                 {$$ = new relacional.default(relacional.tipoOp.ISNULL, $1, undefined, @1.first_line, @1.first_column);}
 ;
 
 // LOGICALS
 
 LOGICEXPRESION:
-    RESNOT LOGICEXPRESION %prec UNEGATION                   {;}   
-    | LOGICEXPRESION RESAND RELAEXPRESION                   {$$ = new logica.default(logica.tipoOp.AND, $1, $3, @1.first_line, @1.first_column);}
-    | RELAEXPRESION                                         {$$ = $1}
+    RESNOT LOGICEXPRESION %prec UNEGATION                   {$$ = new logica.default(logica.tipoOp.NOT, $1, undefined, @1.first_line, @1.first_column);}   
+    | LOGICEXPRESION RESOR LOGICEXPRESION                   {$$ = new logica.default(logica.tipoOp.OR, $1, $3, @1.first_line, @1.first_column);}
+    | LOGICEXPRESION RESAND LOGICEXPRESION                  {$$ = new logica.default(logica.tipoOp.AND, $1, $3, @1.first_line, @1.first_column);}
+    | RELAEXPRESION                                         {$$ = $1;}
+    | PARABRE LOGICEXPRESION PARCIERRA                      {$$ = $2;}
 ;
 
 // INSTRUCCIONES

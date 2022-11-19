@@ -24,8 +24,8 @@ const PATCH = async (req, res) => {
 
 // create new database connection
 const PUT = async (req, res) => {
-    const { dbName } = req.body
-    const result = await createDB(dbName)
+    const { dbName, uri } = req.body
+    const result = await createDB(dbName, uri)
     if(get(result, 'error')) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json()
         return

@@ -26,11 +26,25 @@ export default class Logica extends Instruccion {
                     valueDer
                 ]
             }
-        }
+        }else if(this.tipo===tipoOp.NOT){      
+            return {
+                $not: [
+                    valueIzq
+                ]
+            }
+        }else if(this.tipo===tipoOp.OR){      
+            return {
+                $or: [
+                    valueIzq,
+                    valueDer
+                ]
+            }
+        }        
     }  
 }
 
 export const tipoOp = {
     AND: 0,
-    OR: 1
+    OR: 1,
+    NOT: 2
 }
