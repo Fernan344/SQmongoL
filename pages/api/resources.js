@@ -16,7 +16,7 @@ async function resources (req, res) {
             if(!err) {
                 res.json(names)
             }else{            
-                res.json([])
+                throw new HttpStatusCodeError(StatusCodes.INTERNAL_SERVER_ERROR, 'List of collections can not be obtained.')
             }
         });
     }catch (err){

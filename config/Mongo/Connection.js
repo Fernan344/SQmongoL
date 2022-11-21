@@ -26,7 +26,7 @@ export const testConnection = async (uri) => {
 
 export const getDBList = async (uri) => {
   try {
-    !client && (client = new MongoClient(uri))
+    !client && (client = new MongoClient(uri)) && await client.connect()
     const dbs = await client.db("admin").admin().listDatabases()
     return {dbs}
   }catch (e) {
@@ -36,7 +36,7 @@ export const getDBList = async (uri) => {
 
 export const createDB = async (name, uri) => {
   try {
-    !client && (client = new MongoClient(uri))
+    !client && (client = new MongoClient(uri)) && await client.connect()
     client.db(name).command({ping: 1})
     db = client.db(name)
     return {success: true}
@@ -45,10 +45,13 @@ export const createDB = async (name, uri) => {
   }
 }
 
-export const getDB = () => {
+export const getDB = async (uri, name) => {
+  !client && (client = new MongoClient(uri)) && await client.connect()
+  !db && (db = client.db(name))
   return db;
 }
 
-export const getConnection = async () => {
+export const getConnection = async (uri) => {
+  !client && (client = new MongoClient(uri)) && await client.connect()
   return client
 }

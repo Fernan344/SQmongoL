@@ -23,7 +23,7 @@ function ChatBar(props) {
                 <h2>Collections</h2>
             </div>
             <div className="d-grid gap-2">
-                <Button variant="outline-info" size="lg" onClick={ getResources }><RefreshIcon /></Button>
+                <Button variant="outline-info" size="lg" onClick={ () => getResources(props) }><RefreshIcon /></Button>
             </div>
             <div className="chatBar_chats">
                 {

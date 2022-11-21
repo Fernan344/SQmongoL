@@ -1,6 +1,7 @@
 .chatBar {
     flex: 0.22;    
     max-width: 14vw;
+    height: 100%;
 }
 
 .chatBar_header {

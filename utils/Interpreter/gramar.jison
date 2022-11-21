@@ -62,7 +62,7 @@
 \"[^\"]*\"                                                  { yytext=yytext.substr(1,yyleng-2); return 'CADENA'; }
 \"[^\"]*\"                                                  { yytext=yytext.substr(1,yyleng-2); return 'CADENA'; }
 [0-9]+("."[0-9]+)?\b  	                                    return 'NUMBER';
-"$"?"_"?[A-Za-z]+["_"0-9A-Za-z]*                            return 'IDENTIFICADOR';
+"$"?"_"?[A-Za-z]+["-""_"0-9A-Za-z]*                         return 'IDENTIFICADOR';
 
 <<EOF>>                                                     return 'EOF';
 .                                                           return 'INVALID'
