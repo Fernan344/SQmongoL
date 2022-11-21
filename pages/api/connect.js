@@ -27,8 +27,7 @@ const PUT = async (req, res) => {
     const { dbName, uri } = req.body
     const result = await createDB(dbName, uri)
     if(get(result, 'error')) {
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json()
-        return
+        throw new HttpStatusCodeError(StatusCodes.INTERNAL_SERVER_ERROR, 'Connection to DB cannot be established')
     }else{
         res.status(StatusCodes.OK).json()
         return

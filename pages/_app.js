@@ -6,6 +6,7 @@ import '../styles/Components/ActionBar.css'
 import '../styles/Pages/Index.css'
 import '../styles/Components/DBCard.css'
 import '../styles/Components/Loader.css'
+import '../styles/Components/Table.css'
 import '../styles/Components/SwitchButton.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';

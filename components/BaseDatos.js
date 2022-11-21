@@ -13,7 +13,7 @@ function BaseDatos(props) {
         axios.put('/api/connect', {dbName: get(props, 'message', ''), uri: myURI})
         .then((response) => {
             setMyDB(get(props, 'message', ''))
-            getResources();
+            getResources(props);
             props.enqueueSnackbar(`DB was changed to ${get(props, 'message', '')}`, {variant: "warning"})
         })
         .catch((err) => {

@@ -1,38 +1,25 @@
-import React, { useRef, useEffect, useState  } from "react";
+import React, { useEffect, useRef, useState  } from "react";
 import Editor from "@monaco-editor/react";
 import ActionsBar from "./ActiosnsBar"
 import FilesBar from "./FIlesBar"
-import { textDefaultNewTab, makeData } from '../utils/config/default'
 
 function EditorCustom(props) {
     const editorRef = useRef(null);
     const traductionRef = useRef(null);
     const [ isHandlerDragging, setHandlerDragging ] = useState(false);
     const {
-        text, tabs, activeIndex, setActiveIndex, setText, setTabs, setEditor, traduction, parseCode
-    } = props.states
+        text, tabs, activeIndex, 
+        setEditor, traduction, handleTabChange,
+        handleClickGetAll,
+        handleClickGetSelected,
+        handleChangeCode
+    } = props.states   
 
     useEffect(() => {
-        if(activeIndex === -1){
-            handleTabChange(undefined, 0, true)
-        } else {
-            handleTabChange(undefined, tabs.length - 1)
-        }
-    }, [tabs])
-
-    const handleTabChange = (evt, newValue, onDelete = false) => {  
-        if(!onDelete) tabs[activeIndex].content = text
-        setActiveIndex(newValue);
-        setText(tabs[newValue].content)       
-    }
-
-    const handleClickGetAll = (e) => {
-        parseCode(text)
-    }
-
-    const handleClickGetSelected = (e) => {
-        parseCode(editorRef.current.getModel().getValueInRange(editorRef.current.getSelection()));
-    }
+        if(activeIndex === -1 && !tabs.length) handleTabChange(undefined, 0, 'noData')
+        else if(activeIndex === -1 && tabs.length) handleTabChange(undefined, 0, 'elimination')
+        else handleTabChange(undefined, -1, 'change')
+    }, [tabs])    
 
     const editorDidMount = (editor, monaco) => {
         editorRef.current = editor;
@@ -40,26 +27,7 @@ function EditorCustom(props) {
 
     const traductionEditorDidMount = (editor, monaco) => {
         traductionRef.current = editor;
-    }
-
-    const handleChangeCode = (evt) => {
-        setText(evt)
-    }
-
-    const handleExtraButton = (evt) => {
-        setTabs([...tabs, {
-            title: `New File *`,
-            content: textDefaultNewTab
-        }])
-    }
-
-    const handleDeleteTabButton = (evt) => {
-        const tabsAux = [...tabs]
-        tabsAux.splice(activeIndex, 1)
-        setTabs(!tabsAux.length ? makeData(1) : tabsAux)
-        if(!tabsAux.length) setText(textDefaultNewTab)
-        setActiveIndex(activeIndex  - 1)
-    }
+    } 
 
     const handlerMouseMove = (e) => {
         var handler = document.querySelector('.handler');
@@ -105,9 +73,6 @@ function EditorCustom(props) {
         <div className="chat" onMouseMove={handlerMouseMove} onMouseUp={handlerMouseUp} onMouseDown={handlerMouseDown}> 
             <div className="chad-header">      
                 <FilesBar 
-                    handleExtraButton = {handleExtraButton}
-                    handleTabChange = {handleTabChange}
-                    handleDeleteTabButton = {handleDeleteTabButton}
                     states = {props.states}
                 />          
                 <ActionsBar onClickGetSelected={handleClickGetSelected} onClickGetText={handleClickGetAll} states = {props.states}/>

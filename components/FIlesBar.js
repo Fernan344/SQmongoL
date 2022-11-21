@@ -10,9 +10,10 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 export default function ScrollableTabsButtonVisible(props) {    
-    const { handleTabChange, handleExtraButton, handleDeleteTabButton, states } = props
-    const { activeIndex, myTabs, setMyTabs, tabs } = states
-        
+    const { 
+        handleTabChange, handleExtraButton, handleDeleteTabButton,
+        activeIndex, myTabs, setMyTabs, tabs        
+    } = props.states        
     
     useEffect(() => {
         const tabsComponents = tabs.map((tab, index) => <Tab label={tab.title} key={`tabComp${index}`}/>)
@@ -53,7 +54,7 @@ export default function ScrollableTabsButtonVisible(props) {
                             <Button onClick={()=>handleExtraButton()}><AddCircleRoundedIcon/></Button>
                         </Col>
                         <Col style={{marginLeft: "85%", marginTop: "-4%"}}>                         
-                            <Button onClick={()=>handleDeleteTabButton()}><CloseIcon /></Button>
+                            <Button onClick={handleDeleteTabButton}><CloseIcon /></Button>
                         </Col>
                     </Row>
                 </Container>        
