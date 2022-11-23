@@ -75,7 +75,7 @@ function EditorCustom(props) {
                 <FilesBar 
                     states = {props.states}
                 />          
-                <ActionsBar onClickGetSelected={handleClickGetSelected} onClickGetText={handleClickGetAll} states = {props.states}/>
+                <ActionsBar onClickGetSelected={() => handleClickGetSelected(editorRef)} onClickGetText={handleClickGetAll} states = {props.states}/>
             </div>    
             <div className="chat-body" style={{maxWidth: "1100px"}}>
                 <div className="wrapper">
