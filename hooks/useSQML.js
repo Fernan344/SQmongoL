@@ -22,11 +22,11 @@ export const useSQML = () => {
     const [ queryResults, setQueryResults ] = useState([])
     const [ log, setLog ] = useState('')   
     
-    const handleClickGetAll = (e) => {
+    const handleClickGetAll = () => {
       parseCode(text)
     }
 
-    const handleClickGetSelected = (e) => {
+    const handleClickGetSelected = (editorRef) => {
       parseCode(editorRef.current.getModel().getValueInRange(editorRef.current.getSelection()));
     }
 
