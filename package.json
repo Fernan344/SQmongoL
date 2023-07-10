@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "npm run jison&&next dev",
+    "dev": "nodemon",
+    "preprod": "npm run build && npm run dev",
     "jison": "jison utils/Interpreter/gramar.jison&&copy gramar.js utils\\Interpreter && rimraf gramar.js",
     "build": "next build",
     "start": "next start",
@@ -23,6 +24,7 @@
     "jison": "^0.4.18",
     "lodash": "^4.17.21",
     "material-table": "^2.0.3",
+    "moment": "^2.29.4",
     "mongodb": "^4.10.0",
     "next": "12.3.1",
     "notistack": "^2.0.8",
@@ -33,6 +35,7 @@
   },
   "devDependencies": {
     "eslint": "8.24.0",
-    "eslint-config-next": "12.3.1"
+    "eslint-config-next": "12.3.1",
+    "nodemon": "^2.0.21"
   }
 }

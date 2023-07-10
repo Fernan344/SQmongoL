@@ -1,0 +1,6 @@
+{
+    "watch": ["utils"],
+    "ext": ".jison",
+    "ignore": [],
+    "exec": "npm run jison && next dev"
+}

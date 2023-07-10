@@ -1,12 +1,14 @@
 .chat {
     flex: 1;
     display: flex;
+    position: relative;
     flex-direction: column;
 }
 
 .chat_header {
     display: flex;
     align-items: center;
+    position: relative;
     padding: 25px;
     border-bottom: 1px solid lightgray;
     border-color: #ffffff;

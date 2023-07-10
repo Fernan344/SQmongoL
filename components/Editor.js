@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState  } from "react";
 import Editor from "@monaco-editor/react";
 import ActionsBar from "./ActiosnsBar"
 import FilesBar from "./FIlesBar"
+import { useStateContext } from "../hooks/useSQML";
 
 function EditorCustom(props) {
     const editorRef = useRef(null);
@@ -13,7 +14,7 @@ function EditorCustom(props) {
         handleClickGetAll,
         handleClickGetSelected,
         handleChangeCode
-    } = props.states   
+    } = useStateContext()
 
     useEffect(() => {
         if(activeIndex === -1 && !tabs.length) handleTabChange(undefined, 0, 'noData')
@@ -72,10 +73,8 @@ function EditorCustom(props) {
     return(
         <div className="chat" onMouseMove={handlerMouseMove} onMouseUp={handlerMouseUp} onMouseDown={handlerMouseDown}> 
             <div className="chad-header">      
-                <FilesBar 
-                    states = {props.states}
-                />          
-                <ActionsBar onClickGetSelected={() => handleClickGetSelected(editorRef)} onClickGetText={handleClickGetAll} states = {props.states}/>
+                <FilesBar/>          
+                <ActionsBar onClickGetSelected={() => handleClickGetSelected(editorRef)} onClickGetText={handleClickGetAll}/>
             </div>    
             <div className="chat-body" style={{maxWidth: "1100px"}}>
                 <div className="wrapper">
@@ -103,7 +102,7 @@ function EditorCustom(props) {
                             }}
                             height="90vh"
                             width="100%"
-                            language={"javascript"}
+                            language={"none"}
                             className="code-container"
                             theme="vs-dark"
                             onMount={traductionEditorDidMount}

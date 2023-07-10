@@ -4,19 +4,32 @@ export class Three {
     consola;
     traduction;
     results;
+    pipeline;
     mode;
     schema;
-    constructor(instrucciones, mode, connection = undefined, db = undefined) {
+    tablaGlobal;
+    tableName;
+    afterInterpretation;
+    constructor(instrucciones, mode, connection = undefined, db = undefined, uri = undefined) {
         this.instrucciones = instrucciones;
         this.traduction = '';
         this.consola = '';
         this.errores = [];
         this.mode = mode;
         this.results = [];
-        this.schema = {connection, db}
+        this.schema = {connection, db, uri}
+        this.tablaGlobal = {}
+        this.tableName = ""
+        this.afterInterpretation = [];
+    }
+    addActionAfterInterpretation ({action, value}) {
+        this.afterInterpretation.push({action, value});
     }
     getSchema() {
         return this.schema;
+    }
+    setSchemaProp(props) {
+        this.schema = {...this.schema, ...props};
     }
     getMode() {
         return this.mode;
@@ -62,5 +75,11 @@ export class Three {
     }
     settablaGlobal(value) {
         this.tablaGlobal = value;
+    }
+    setTableName(tableName) {
+        this.tableName = tableName;
+    }
+    setSettings({pipeline}) {
+        this.pipeline = pipeline;
     }
 }

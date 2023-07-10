@@ -2,6 +2,7 @@
     height: 100%;
     display: flex;
     width: 100%;
+    position: relative;
     place-items: center;
     resize: vertical;
 }
@@ -10,7 +11,7 @@
     position: fixed;
     display: flex;
     scroll-behavior: auto;
-    z-index: 999999;
+    z-index: 990;
     left: 73rem;
     top: 32rem;
     transform: translate(-50%, -50%);

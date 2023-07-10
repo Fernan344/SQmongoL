@@ -1,10 +1,13 @@
+import { get } from 'lodash';
 import { Instruccion } from '../Instructions/Abstract/Instruction';
-import {DataType} from '../Three/Type';
 
 export default class Logica extends Instruccion {
   operacionIzq;
   operacionDer;
   tipo;
+  pipeline;
+  foreign;
+  local;
   
 
   constructor(tipo, opIzq, opDer, fila, columna) {
@@ -12,6 +15,9 @@ export default class Logica extends Instruccion {
     this.tipo = tipo;
     this.operacionIzq = opIzq;
     this.operacionDer = opDer;
+    this.pipeline = false;
+    this.foreign = undefined;
+    this.local = undefined;
   }
 
     interpretar(arbol) {
@@ -41,6 +47,18 @@ export default class Logica extends Instruccion {
             }
         }        
     }  
+
+    analizar(ast) {
+        const dataIzq = this.operacionIzq.setConfig(true, this.foreign).analizar(ast);
+        const dataDer = this.operacionDer.setConfig(true, this.foreign).analizar(ast);
+        return { let: {...get(dataIzq, 'let', {}), ...get(dataDer, 'let')}, local: get(dataIzq, 'local', get(dataDer, 'local')) }
+    }
+
+    setConfig(pipeline, foreign) {
+        this.pipeline = pipeline
+        this.foreign = foreign;
+        return this
+    }
 }
 
 export const tipoOp = {

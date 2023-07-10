@@ -8,12 +8,13 @@ import Button from '@mui/material/Button';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import { useStateContext } from '../hooks/useSQML';
 
 export default function ScrollableTabsButtonVisible(props) {    
     const { 
         handleTabChange, handleExtraButton, handleDeleteTabButton,
         activeIndex, myTabs, setMyTabs, tabs        
-    } = props.states        
+    } = useStateContext()
     
     useEffect(() => {
         const tabsComponents = tabs.map((tab, index) => <Tab label={tab.title} key={`tabComp${index}`}/>)

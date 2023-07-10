@@ -17,5 +17,7 @@ export const DataType = {
     CADENA: 1,
     BOOLEAN: 2,
     IDENTIFICADOR: 3,
-    INDEFINIDO: 4
+    INDEFINIDO: 4,    
+    JSONKEY: 5,
+    OBJECTID: 6
 }

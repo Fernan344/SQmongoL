@@ -1,8 +1,10 @@
-import { useState } from 'react'
+import React, { createContext, useState, useContext } from 'react';
 import { textDefaultNewTab, makeData, translateModes } from '../utils/config/default'
 import axios from 'axios'
 import get from 'lodash/get'
 import set from 'lodash/set'
+
+const StateContext = createContext();
 
 export const useSQML = () => {
     const [ resources, setResources ] = useState([])
@@ -135,3 +137,11 @@ export const useSQML = () => {
         handleDeleteTabButton
     }
 }
+
+export const StateProvider = ({ children }) => {
+  return <StateContext.Provider value={useSQML()}>
+    {children}
+  </StateContext.Provider>
+}
+
+export const useStateContext = () => useContext(StateContext);
