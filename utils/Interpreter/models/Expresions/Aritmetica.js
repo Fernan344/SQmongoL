@@ -1,21 +1,42 @@
-import { Instruccion } from '../Instructions/Abstract/Instruction';
+import { Expresion } from '../Instructions/Abstract/Expression';
 
-export default class Aritmetico extends Instruccion {
-  operacionIzq;
-  operacionDer;
-  tipo;
-  
+export default class Aritmetico extends Expresion {
 
   constructor(tipo, opIzq, opDer, fila, columna) {
-    super(fila, columna);
-    this.tipo = tipo;
-    this.operacionIzq = opIzq;
-    this.operacionDer = opDer;
+    super(opIzq, opDer, tipo, fila, columna);
+  }
+  
+  async exec(ast) {
+    return this[ast.getAction()](ast)
+  }
+  
+  async interpret(ast) {            
+    return this.execArithmetic(ast);
   }
 
-  interpretar(arbol) {
-            
-        return null;
+  async translate(ast) {            
+    return this.execArithmetic(ast);
+  }
+
+  async execArithmetic(ast) {
+    const valueIzq = this.operacionIzq
+    const valueDer = this.operacionDer
+
+    const operators = [valueIzq, valueDer]
+
+    if([
+      tipoOp.SUMA,
+      tipoOp.RESTA,
+      tipoOp.MULTIPLICACION,
+      tipoOp.DIVISION
+    ].includes(this.tipo)) {
+      return this.getExprValue(operations[this.tipo], operators, ast);
+    }
+  }
+
+  setConfig(...params) {
+    this.setConfiguration(...params);
+    return this;
   }
 }
 
@@ -24,4 +45,11 @@ export const tipoOp = {
     RESTA: 1,
     DIVISION: 2,
     MULTIPLICACION: 3
+}
+
+export const operations = {
+  [tipoOp.SUMA]: '$add',
+  [tipoOp.RESTA]: '$subtract',
+  [tipoOp.MULTIPLICACION]: '$multiply',
+  [tipoOp.DIVISION]: '$divide'
 }

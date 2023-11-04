@@ -1,6 +1,8 @@
 import get from "lodash/get";
 import { Instruccion } from "./Abstract/Instruction";
 import { Double } from "mongodb";
+import PromiseB from 'bluebird';
+import flat from 'flat'
 
 export default class InsertInto extends Instruccion {
     
@@ -15,20 +17,12 @@ export default class InsertInto extends Instruccion {
         this.registers = registers;
     }
 
-    async interpretar(ast){        
-        const {db} = ast.getSchema();
-        const validator = await this.getValidator(db);
-        const values = this.registers.map((reg) => {
-            let object = {};
-            reg.forEach((value, i) => {
-                const key = get(this.tableKeys, i)
-                object = {
-                    ...object,
-                    [`${key}`]: this.convertValue(get(validator, key, {}), value.interpretar(ast))
-                }
-            })
-            return object
-        })
+    async exec(ast) {
+        return this[ast.getAction()](ast)
+    }
+
+    async translate(ast) {
+        const {values} = await this.execInsertInto(ast)
         const insertValue = JSON.stringify((values.length === 1 ? values[0] : values), null, 2);
         const traductionParts = [`db.getCollection("${this.table}").`,
             `${values.length === 1 ? 'insertOne(' : 'insertMany('}`,
@@ -36,16 +30,51 @@ export default class InsertInto extends Instruccion {
             `);`
         ]
         ast.addTraduction(traductionParts.join('\n'))
-        if(!ast.getMode()) {             
-            try {                          
-                const collection = db.collection(this.table);
-                await collection.insertMany(values);
-                ast.actualizaConsola(`${values.length} values inserted into ${this.table}`);
-            } catch (e) {
-                console.log(e.writeErrors[0].err.errInfo.details.schemaRulesNotSatisfied[0].propertiesNotSatisfied[0].details)
-                ast.actualizaConsola(`${values.length} values can not be inserted into ${this.table}`);
-            }
+    }
+
+    async interpret(ast){        
+        const {values} = await this.execInsertInto(ast)                        
+        try {                          
+            const collection = db.collection(this.table);
+            await collection.insertMany(values);
+            ast.actualizaConsola(`${values.length} values inserted into ${this.table}`);
+        } catch (e) {
+            console.log(e.writeErrors[0].err.errInfo.details.schemaRulesNotSatisfied[0].propertiesNotSatisfied[0].details)
+            ast.actualizaConsola(`${values.length} values can not be inserted into ${this.table}`);
         }
+    }
+
+    async execInsertInto(ast) {
+        const {db} = ast.getSchema();
+        const validator = await this.getValidator(db);
+        if(!this.tableKeys) {
+            const registersExecuted = await this.registers.exec(ast);
+            const values = await PromiseB.map(registersExecuted, async (reg) => {
+                let object = {};
+                const keys = Object.keys(flat(reg));
+                await PromiseB.each(keys, async (key) => {                    
+                    object = {
+                        ...object,
+                        [`${key}`]: this.convertValue(get(validator, key, {}), get(reg, key))
+                    }
+                })
+                return flat.unflatten(object)
+            })
+            return {values}
+        }
+
+        const values = await PromiseB.map(this.registers, async (reg) => {
+            let object = {};
+            await PromiseB.each(reg, async (value, i) => {
+                const key = get(this.tableKeys, i)
+                object = {
+                    ...object,
+                    [`${key}`]: this.convertValue(get(validator, key, {}), await value.exec(ast))
+                }
+            })
+            return object
+        })
+        return {values}
     }
 
     convertValue(options, value) {

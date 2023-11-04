@@ -19,5 +19,8 @@ export const DataType = {
     IDENTIFICADOR: 3,
     INDEFINIDO: 4,    
     JSONKEY: 5,
-    OBJECTID: 6
+    OBJECTID: 6,
+    ALIAS: 7,
+    JSONARR: 8,
+    JSONOBJ: 9
 }

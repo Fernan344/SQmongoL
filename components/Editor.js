@@ -23,7 +23,7 @@ function EditorCustom(props) {
     }, [tabs])    
 
     const editorDidMount = (editor, monaco) => {
-        editorRef.current = editor;
+        editorRef.current = editor;       
     }
 
     const traductionEditorDidMount = (editor, monaco) => {

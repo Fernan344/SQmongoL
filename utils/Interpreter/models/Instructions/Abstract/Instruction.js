@@ -8,12 +8,16 @@ export class Instruccion {
       this.columna = columna;
     }
   
-    interpret(any){
+    interpret(any) {
       throw new Error("Method 'interpret()' must be implemented. Param: "+any);
     };
 
-    translate(any){
+    translate(any) {
       throw new Error("Method 'translate()' must be implemented. Param: "+any);
+    }
+
+    exec(any) {
+      throw new Error("Method 'exec()' must be implemented. Param: "+any);
     }
 
     traduct

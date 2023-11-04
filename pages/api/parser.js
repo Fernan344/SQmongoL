@@ -10,12 +10,13 @@ export default async function parse (req, res) {
     const database = onlyTranslate ? undefined : await getDB(uri, db);
     const connection = onlyTranslate ? undefined : await getConnection(uri); 
     const ast = new Three(parser.parse(code), onlyTranslate, connection, database, uri);    
-    for (let i of ast.getinstrucciones()) {     
-      await i.interpretar(ast)
+    for (let i of ast.getinstrucciones()) {  
+      ast.reInit();   
+      await i.exec(ast)
     }    
     res.status(200).json({traduction: ast.getTraduction(), results: ast.getResults(), console: ast.getconsola()})
   }catch (err){
-    console.error(`Error at line ${err.line}, column ${err.column}: expected ${err.expected}`);
+    console.error(`Error at line ${err.line}, column ${err.column}: expected ${err}`);
     errorMidleware(err, req, res)
   }
 }

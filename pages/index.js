@@ -8,10 +8,11 @@ import { SnackbarProvider } from "notistack"
 import { useStateContext } from "../hooks/useSQML";
 
 function IndexPage(props) {
-  const {getResources, charge} = useStateContext()  
+  const {getResources, charge, initTabs} = useStateContext()  
 
   useEffect(() => {
     getResources(props)
+    initTabs();
   }, [])
 
   return (

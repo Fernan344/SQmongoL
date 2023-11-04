@@ -1,4 +1,4 @@
-import { Instruccion } from "./Abstract/Instruction"
+import { Instruccion } from "../Abstract/Instruction"
 import get from 'lodash/get'
 
 export default class Join extends Instruccion {
@@ -18,7 +18,19 @@ export default class Join extends Instruccion {
         this.internalLookup = []
     }
 
-    interpretar(ast){
+    async exec(ast) {
+        return this[ast.getAction()](ast)
+    }
+
+    async interpret(ast){
+        return this.getJoinData(ast);
+    }
+
+    async translate(ast) {
+        return this.getJoinData(ast);
+    }
+
+    async getJoinData(ast) {
         const extraLookup = this.internalLookup && this.internalLookup.length ? this.internalLookup : []
         const aggregate = 
         [
@@ -29,10 +41,7 @@ export default class Join extends Instruccion {
                     let: this.let,
                     pipeline: [
                         {
-                            $match:
-                            {
-                                $expr: this.operation.interpretar(ast)
-                            }
+                            $match: await this.operation.exec(ast)
                         },
                         ...extraLookup
                     ]
@@ -45,8 +54,10 @@ export default class Join extends Instruccion {
         return aggregate;
     }
 
-    prepare(ast) {
-        const opData = this.operation.setConfig(true, this.alias || this.table).analizar(ast)
+    async prepare(ast) {
+        this.alias = this.alias ? await this.alias.exec(ast) : undefined;
+        this.table = this.table ? await this.table.exec(ast) : undefined;
+        const opData = await this.operation.setConfig(true, this.alias || this.table, false).analize(ast)
         this.let = get(opData, 'let', {})
         this.principal = get(opData, 'local', '')
         return this

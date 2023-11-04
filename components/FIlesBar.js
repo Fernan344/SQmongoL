@@ -13,8 +13,10 @@ import { useStateContext } from '../hooks/useSQML';
 export default function ScrollableTabsButtonVisible(props) {    
     const { 
         handleTabChange, handleExtraButton, handleDeleteTabButton,
-        activeIndex, myTabs, setMyTabs, tabs        
+        activeIndex, tabs        
     } = useStateContext()
+    
+    const [ myTabs, setMyTabs ] = useState([])
     
     useEffect(() => {
         const tabsComponents = tabs.map((tab, index) => <Tab label={tab.title} key={`tabComp${index}`}/>)
