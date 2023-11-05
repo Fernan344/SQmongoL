@@ -122,7 +122,7 @@ export const makeData = (number) => {
     const data = [];
     for (let i = 0; i < number; i++) {
       data.push({
-        title:     `New File *`,
+        title:  `New File *`,
         content: textDefaultNewTab
       });
     }

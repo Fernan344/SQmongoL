@@ -8,6 +8,7 @@ import '../styles/Components/DBCard.css'
 import '../styles/Components/Loader.css'
 import '../styles/Components/Table.css'
 import '../styles/Components/SwitchButton.css'
+import '../styles/Components/FileInput.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
 import { StateProvider, useSQML } from '../hooks/useSQML'

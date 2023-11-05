@@ -12,6 +12,8 @@ import Modal from './Modal';
 import ConnectionCard from './ConnectionCard';
 import {withSnackbar} from 'notistack'
 import { useStateContext } from "../hooks/useSQML";
+import CustomFileInput from '../components/FileInput';
+import CreateFile from "./CreateFile";
 
 function NavBar(props) {
     const {
@@ -19,6 +21,19 @@ function NavBar(props) {
       connections, setConnections, 
       modalNewConnectionShow, setModalNewConnectionShow 
     } = useStateContext();
+
+    const fileInputRef = useRef(null);
+    const fileOutputRefSQL = useRef(null);
+    const fileOutputRefSQML = useRef(null);
+    const fileOutputRefJS = useRef(null);
+
+    const handleReadButtonClick = () => {
+      fileInputRef.current.click(); 
+    };
+
+    const handleSaveButtonClick = (ref) => {
+      ref.current.click(); 
+    };
 
     const modalConnectionsFooter = 
     <>
@@ -64,6 +79,7 @@ function NavBar(props) {
       </Button>
       <Button onClick={()=>{ setModalNewConnectionShow(false); setModalShow(true); }}>Cancel</Button>
     </>
+
     const modalBodyCreateConnection = () => <>
       <Form>
         <Form.Group className="mb-3" controlId="newConnectionName">
@@ -79,21 +95,28 @@ function NavBar(props) {
     </>
 
     return(
-      <>
+      <>        
+        <CustomFileInput reference={fileInputRef}></CustomFileInput>
+        <CreateFile reference={fileOutputRefSQL}></CreateFile>
+        <CreateFile reference={fileOutputRefSQML} ext={'sqml'}></CreateFile>
+        <CreateFile reference={fileOutputRefJS} name={'traduction'} ext={'js'}></CreateFile>
         <Navbar bg="light" expand="lg">
           <Container>
             <Navbar.Brand>SQMongoL</Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="me-auto">
-                <NavDropdown title="File" id="basic-nav-dropdown">
-                  <NavDropdown.Item>New File</NavDropdown.Item>
-                  <NavDropdown.Item>Open File</NavDropdown.Item>
-                  <NavDropdown.Item>Save File</NavDropdown.Item>
-                  <NavDropdown.Item>Save File As</NavDropdown.Item>
+                <NavDropdown title="File" id="basic-nav-dropdown">   
+                  <NavDropdown.Item onClick={handleReadButtonClick}>Open File</NavDropdown.Item>
+                  <NavDropdown.Item onClick={() => handleSaveButtonClick(fileOutputRefSQL)}>Save File As (SQL)</NavDropdown.Item>
+                  <NavDropdown.Item onClick={() => handleSaveButtonClick(fileOutputRefSQML)}>Save File As (SQML)</NavDropdown.Item>
+                  <NavDropdown.Item onClick={() => handleSaveButtonClick(fileOutputRefJS)}>Save File As (MONGO)</NavDropdown.Item>
                 </NavDropdown>
                 <NavDropdown title="Connections" id="basic-nav-dropdown">
                   <NavDropdown.Item onClick={()=>setModalShow(true)}>Manage Connections</NavDropdown.Item>
+                </NavDropdown>  
+                <NavDropdown title="Work Sessions" id="basic-nav-dropdown">
+                  <NavDropdown.Item onClick={()=>setModalShow(true)}>Manage Sessions</NavDropdown.Item>
                 </NavDropdown>                           
               </Nav>
             </Navbar.Collapse>

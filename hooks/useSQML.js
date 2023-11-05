@@ -47,6 +47,11 @@ export const useSQML = () => {
       setText(evt)
     }
 
+    const openFile = (title, data) => {
+      setActiveIndex(tabs.length)
+      setTabs([...tabs, {title, content: data}])
+    }
+
     const handleExtraButton = (evt) => {
         setActiveIndex(tabs.length)
         setTabs([...tabs, ...makeData(1)])
@@ -139,7 +144,8 @@ export const useSQML = () => {
         handleChangeCode,
         handleExtraButton,
         handleDeleteTabButton,
-        initTabs
+        initTabs,
+        openFile
     }
 }
 
