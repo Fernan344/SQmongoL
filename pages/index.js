@@ -8,7 +8,7 @@ import { SnackbarProvider } from "notistack"
 import { useStateContext } from "../hooks/useSQML";
 
 function IndexPage(props) {
-  const {getResources, charge, initTabs} = useStateContext()  
+  const {getResources, charge, initTabs, myURI} = useStateContext()  
 
   useEffect(() => {
     getResources(props)
@@ -17,13 +17,14 @@ function IndexPage(props) {
 
   return (
     <>
-      <NavBar/>
-      <div className="app">             
-        <div className="app_body">
-          <ResoursesBar/> 
-          <Editor/>                   
-        </div>   
-      </div>         
+      <NavBar/>        
+      <div className="app_body">
+        { myURI !== 'none' 
+          ? <div className="app_body_col_res"><ResoursesBar/></div> 
+          : <></> 
+        }
+        <div className={myURI === 'none' ? "app_body_col_ed" : "app_body_col_ed_shared" }><Editor/></div>                   
+      </div>     
       <div className="log-info">
             <LogInfo/>
       </div>  

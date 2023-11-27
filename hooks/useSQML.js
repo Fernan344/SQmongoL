@@ -2,7 +2,10 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import { textDefaultNewTab, makeData, translateModes } from '../utils/config/default'
 import axios from 'axios'
 import get from 'lodash/get'
+import { StatusCodes } from "http-status-codes"
 import set from 'lodash/set'
+import isArray from 'lodash/isArray';
+import path from 'path'
 
 const StateContext = createContext();
 
@@ -16,9 +19,11 @@ export const useSQML = () => {
     const [ translateMode, setTranslateMode ] = useState(translateModes.OnlyTranslate)
     const [ traduction, setTraduction ] = useState("");
     const [ modalNewConnectionShow, setModalNewConnectionShow ] = useState(false)
+    const [ modalManageSessionsShow, setModalManageSessionsShow ] = useState(false)
+    const [ modalDirectoryChooserShow, setModalDirectoryChooseShow ] = useState(false)
     const [ charge, setCharge ] = useState(false)
-    const [ dbs, setDbs ] = useState([])
-    const [ myURI, setMyURI] = useState("");
+    const [ dbs, setDbs ] = useState([]);
+    const [ myURI, setMyURI] = useState("none");
     const [ myDB, setMyDB] = useState("");
     const [ queryResults, setQueryResults ] = useState([])
     const [ log, setLog ] = useState('')   
@@ -26,14 +31,120 @@ export const useSQML = () => {
     useEffect(() => {
       handleChangeCode(get(tabs, `${activeIndex}.content`, ''))
     }, [activeIndex])
+
+    const showMessage = (props, messages, variant) => {
+      const messagesToShow = isArray(messages) ? messages : [messages]
+      messagesToShow.forEach(m => {
+        props.enqueueSnackbar(m, {variant: variant})
+      })
+    }
+
+    const showErrors = (props, messages) => {
+      showMessage(props, messages, 'error');
+    }
+
+    const showSuccess = (props, messages) => {
+      showMessage(props, messages, 'success');
+    }
+
+    const showWarning = (props, messages) => {
+      showMessage(props, messages, 'warning');
+    }
+
+    const updateConnections = (cons) => {
+      setConnections(cons)
+      localStorage.setItem('connections', JSON.stringify(cons))
+    }
+
+    const saveFileInSystem = (
+      props,
+      dirs, 
+      fileName, 
+      ext, 
+      setFileAlreadyExists = () => {},
+      forceSave = false, 
+      onSuccess = () => {}
+    ) => {
+      const activeTab = tabs[activeIndex]
+      const content = (ext === 'js' ? traduction : activeTab.content) || "";
+      if(fileName === "") {
+          showErrors(props, "File name can not be empty")
+          return
+      }
+      
+      axios.post('/api/files', {
+          fileName: `${fileName}`,
+          ext: ext ? `${ext}` : undefined,
+          dirs: dirs.map(d => d.dir),
+          content,
+          forceSave
+      }).then(({data}) => {
+          if(get(data, 'success') === true) {
+              updatePathTab(get(data, 'fileName'), get(data, 'path'));
+              showSuccess(props, "File saved successfully");   
+              onSuccess()             
+          } else {
+              showErrors(props, "File can not be saved")
+          }
+          setFileAlreadyExists(false);
+      }).catch(({response}) => {            
+          showErrors(props, get(response, 'data.message', 'Error while trying save file'))
+          if(get(response, 'data.status') === StatusCodes.CONFLICT) {
+              setFileAlreadyExists(true);
+              return
+          }
+      })
+  }
+
+    const saveFile = (props) => {
+      if(get(tabs, `${activeIndex}.path`)) {
+        const pathFile = get(tabs, `${activeIndex}.path`)
+        const fileName = get(tabs, `${activeIndex}.title`)
+        
+        saveFileInSystem(props, [{ dir: pathFile }], fileName, undefined, () => {}, true, () => {});        
+        return true;
+      }
+      showErrors(props, 'File not found')
+      return false;
+    }
+
+    const updatePathTab = (name, path) => {
+      const auxTabs = [...tabs]
+      set(auxTabs, `${activeIndex}.path`, path);
+      set(auxTabs, `${activeIndex}.title`, name);
+      localStorage.setItem('tabs', JSON.stringify(auxTabs));
+      setTabs(auxTabs)
+    }
     
     const handleClickGetAll = () => {
       parseCode(text)
     }
 
-    const initTabs = () => {
+    const initTabs = () => {      
       const existsTabs = localStorage.getItem('tabs');
+      const sessions = localStorage.getItem('sessions');
+      const currentSession = localStorage.getItem('currentSession');
+      if(!currentSession) {        
+        localStorage.setItem('currentSession', 'default');
+      }
+      if(!sessions) {
+        localStorage.setItem('sessions', JSON.stringify({default: []}));
+      }
+      setActiveIndex(0);
       existsTabs ? setTabs(JSON.parse(existsTabs)) : handleExtraButton();
+    }
+
+    const selectNewSession = (newSession) => {
+      const sessions = JSON.parse(localStorage.getItem('sessions'));
+      const currentSession = localStorage.getItem('currentSession');
+
+      set(sessions, currentSession, tabs);
+      localStorage.setItem('sessions', JSON.stringify(sessions));
+      const newCurrentTabs = get(sessions, newSession, [])
+      localStorage.setItem('tabs', JSON.stringify(newCurrentTabs.length ? newCurrentTabs : makeData(1)));
+      localStorage.setItem('currentSession', newSession);
+      setModalManageSessionsShow(false);
+      initTabs();
     }
 
     const handleClickGetSelected = (editorRef) => {
@@ -106,6 +217,28 @@ export const useSQML = () => {
       })
     }
 
+    const modalConnectionsDidMount = () => {
+      const cons = JSON.parse(localStorage.getItem('connections'))
+      setConnections(cons && cons.length ? cons : [])
+    }
+
+    const testConnection = (props, uri) => {
+      setCharge(true)
+      axios.post('/api/connect', {uri})
+      .then((response) => {
+        if([StatusCodes.NO_CONTENT].includes(response.status)) {
+          showSuccess(props, 'Connection stablished successfuly')
+        } else {
+          showErrors(props, `Connection can not be stablished`)
+        }
+        setCharge(false)
+      })
+      .catch((err) => {
+        showErrors(props, `Connection can not be stablished`)
+        setCharge(false)
+      })
+  }
+
     return {
         resources,
         text,
@@ -122,6 +255,10 @@ export const useSQML = () => {
         myDB,
         queryResults,
         log,
+        modalManageSessionsShow, 
+        modalDirectoryChooserShow, 
+        setModalDirectoryChooseShow,
+        setModalManageSessionsShow,
         parseCode,
         setResources,
         setText,
@@ -145,7 +282,17 @@ export const useSQML = () => {
         handleExtraButton,
         handleDeleteTabButton,
         initTabs,
-        openFile
+        openFile,
+        modalConnectionsDidMount,
+        selectNewSession,
+        updateConnections,
+        showErrors,
+        showSuccess,
+        showWarning,
+        testConnection,
+        updatePathTab,
+        saveFileInSystem,
+        saveFile
     }
 }
 

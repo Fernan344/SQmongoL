@@ -1,18 +1,10 @@
-import {HTTP_METHODS} from "../../utils/Http/enums"
 import { HttpStatusCodeError } from "../../utils/Http/HttpStatusCodeError";
 import { StatusCodes } from "http-status-codes";
+import get from 'lodash/get'
 
 export const HttpMidleware = async (methods, req, res) => {
-    const { GET, POST, PATCH, PUT } = methods
-    if(req.method === HTTP_METHODS.GET && GET) {
-        await GET(req, res);
-    }else if(req.method === HTTP_METHODS.POST && POST) {
-        await POST(req, res);
-    }else if(req.method === HTTP_METHODS.PATCH && PATCH) {
-        await PATCH(req, res);
-    }else if(req.method === HTTP_METHODS.PUT && PUT) {
-        await PUT(req, res);
-    }else{
+    const method = get(methods, req.method) || (async (req, res) => {
         throw new HttpStatusCodeError(StatusCodes.NOT_IMPLEMENTED)
-    }
+    })
+    await method(req, res);
 }

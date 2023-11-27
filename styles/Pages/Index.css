@@ -21,14 +21,31 @@
     display: flex;
     background-color: #ffffff;  
     height: 100%;
-    width: 99%;
+    width: 100vw;
+    max-width: 95vw;
     position: relative;
     box-shadow: 0 20px 20px #ffffff, 0 6px 6px rgb(255, 255, 255);
 }
 
+.app_body_col_res {
+    flex: 0.15 0.15 auto;
+}
+
+.app_body_col_ed {
+    display: flex;
+    width: 100%;
+    flex: 1 1 auto;
+    justify-content: center;
+}
+
+.app_body_col_ed_shared {
+    flex: 0.85 0.85 auto;
+    max-width: 82vw;
+}
+
 .log-info {
     display: flex;
-    position: absolute;
+    position: relative;
     width: 100%;
     overflow-y: auto;
     resize: vertical;

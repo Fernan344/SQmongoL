@@ -12,6 +12,7 @@ import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import isObject from 'lodash/isObject';
+import isArray from 'lodash/isArray';
 import toString from 'lodash/toString';
 import get from 'lodash/get';
 
@@ -30,7 +31,15 @@ function Row(props) {
           {`${JSON.stringify(row).substring(0, 75)}${JSON.stringify(row).length > 75 ? '...}':''}`}
         </TableCell>   
         <TableCell component="th" scope="row">
-          object
+          {
+            isArray(row) 
+              ? 'array' 
+              : (
+                isObject(row)
+                ? 'object'
+                : 'property'
+              )
+          }
         </TableCell>        
         <TableCell>
           <IconButton
@@ -59,8 +68,8 @@ function Row(props) {
                     if(isObject(get(row, keyRow))) return <Row name = {keyRow} row =  {get(row, keyRow) } />
                     return <TableRow key={get(row, '_id', 0)}>
                       <TableCell>{keyRow}</TableCell>
-                      <TableCell align="left">{toString(get(row, keyRow, ''))}</TableCell>
-                      <TableCell align="left">{Math.round(0 * 100 * 100) / 100}</TableCell>
+                      <TableCell align="left">{toString(get(row, keyRow) === null ? 'null' : get(row, keyRow))}</TableCell>
+                      <TableCell align="left">property</TableCell>
                     </TableRow>
                   })}
                 </TableBody>

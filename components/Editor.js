@@ -13,7 +13,8 @@ function EditorCustom(props) {
         setEditor, traduction, handleTabChange,
         handleClickGetAll,
         handleClickGetSelected,
-        handleChangeCode
+        handleChangeCode,
+        translateMode
     } = useStateContext()
 
     useEffect(() => {
@@ -21,6 +22,17 @@ function EditorCustom(props) {
         else if(activeIndex === -1 && tabs.length) handleTabChange(undefined, 0, 'elimination')
         else handleTabChange(undefined, -1, 'change')
     }, [tabs])    
+
+    useEffect(() => {
+        var boxA = document.querySelector('.boxA');
+        var boxB = document.querySelector('.boxB');
+        if(translateMode) {
+            boxA.style.width = "100%"
+        } else {
+            boxA.style.width = "50%"
+            boxB.style.width = "50%"
+        }
+    }, [translateMode])
 
     const editorDidMount = (editor, monaco) => {
         editorRef.current = editor;       
@@ -32,6 +44,7 @@ function EditorCustom(props) {
 
     const handlerMouseMove = (e) => {
         var handler = document.querySelector('.handler');
+        if(!handler) return
         var wrapper = handler.closest('.wrapper');
         var boxA = wrapper.querySelector('.boxA');
         var boxB = wrapper.querySelector('.boxB');
@@ -76,7 +89,7 @@ function EditorCustom(props) {
                 <FilesBar/>          
                 <ActionsBar onClickGetSelected={() => handleClickGetSelected(editorRef)} onClickGetText={handleClickGetAll}/>
             </div>    
-            <div className="chat-body" style={{maxWidth: "1100px"}}>
+            <div className="chat-body">
                 <div className="wrapper">
                     <div className="boxA">
                         <Editor
@@ -94,22 +107,25 @@ function EditorCustom(props) {
                             defaultValue="// Type here your SQML queries"
                         ></ Editor>     
                     </div>
-                    <div className="handler"></div>
-                    <div className="boxB">
-                        <Editor
-                            ref={(editor) => {
-                                setEditor(editor); // keep the reference here.
-                            }}
-                            height="90vh"
-                            width="100%"
-                            language={"none"}
-                            className="code-container"
-                            theme="vs-dark"
-                            onMount={traductionEditorDidMount}
-                            value={traduction}
-                            defaultValue=""
-                        ></ Editor>      
-                    </div>  
+                    { !translateMode ? <>
+                        <div className="handler"></div>
+                        <div className="boxB">
+                            <Editor
+                                ref={(editor) => {
+                                    setEditor(editor); // keep the reference here.
+                                }}
+                                height="90vh"
+                                width="100%"
+                                language={"javascript"}
+                                className="code-container"
+                                theme="vs-dark"
+                                onMount={traductionEditorDidMount}
+                                value={traduction}
+                                defaultValue=""
+                            ></ Editor>      
+                        </div>  
+                        </> : <></>
+                    }
                 </div>   
             </div>
         </div>

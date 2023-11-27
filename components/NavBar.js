@@ -1,25 +1,25 @@
-import React, { useEffect, useRef, useState } from "react";
-import { StatusCodes } from "http-status-codes"
+import React, { useRef, useState } from "react";
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import Button from 'react-bootstrap/Button';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-import Form from 'react-bootstrap/Form';
 import Container from 'react-bootstrap/Container';
-import axios from 'axios';
-import get from 'lodash/get';
-import Modal from './Modal';
-import ConnectionCard from './ConnectionCard';
 import {withSnackbar} from 'notistack'
 import { useStateContext } from "../hooks/useSQML";
 import CustomFileInput from '../components/FileInput';
 import CreateFile from "./CreateFile";
+import CreateConnection from "./CreateConnection";
+import ViewConnections from "./ViewConnections";
+import ManageSessions from "./ManageSessions";
+import CustomSaveDialog from "./CustomFileSave";
 
 function NavBar(props) {
+    const [extToSave, setExtToSave] = useState('')
+
     const {
-      modalShow, setModalShow, 
-      connections, setConnections, 
-      modalNewConnectionShow, setModalNewConnectionShow 
+      setModalShow,
+      setModalManageSessionsShow,
+      setModalDirectoryChooseShow,
+      saveFile
     } = useStateContext();
 
     const fileInputRef = useRef(null);
@@ -31,68 +31,18 @@ function NavBar(props) {
       fileInputRef.current.click(); 
     };
 
-    const handleSaveButtonClick = (ref) => {
+    const handleDownloadFileButtonClick = (ref) => {
       ref.current.click(); 
+    };  
+
+    const handleSaveFileButtonClick = (ext) => {
+      setExtToSave(ext);
+      setModalDirectoryChooseShow(true);
     };
 
-    const modalConnectionsFooter = 
-    <>
-      <Button onClick={()=>setModalShow(false)}>Close</Button>
-      <Button onClick={()=>{ setModalShow(false); setModalNewConnectionShow(true); }}>Crate New</Button>
-    </>
-
-    const modalConnectionsDidMount = () => {
-      const cons = JSON.parse(window.localStorage.getItem('connections'))
-      setConnections(cons && cons.length ? cons : [])
+    const handleSaveFileExists = () => {
+      setModalDirectoryChooseShow(!saveFile(props))
     }
-
-    const saveConnection = () => {
-      const name = document.getElementById("newConnectionName").value
-      const uri = document.getElementById("newConnectionURI").value
-      modalConnectionsDidMount();
-      const localCons = connections;
-      if(localCons && localCons.length) window.localStorage.setItem('connections', JSON.stringify([...localCons, {name, uri}]))
-      else window.localStorage.setItem('connections', JSON.stringify([{name, uri}]))
-      modalConnectionsDidMount();
-      setModalShow(true); setModalNewConnectionShow(false);
-    }
-
-    const testConnection = () => {
-      const uri = document.getElementById("newConnectionURI").value
-      axios.post('/api/connect', {uri})
-        .then((response) => {
-            if([StatusCodes.NO_CONTENT].includes(response.status)) {
-              props.enqueueSnackbar('Connection established successfuly', {variant: "success"})
-            }
-        })
-        .catch((err) => {
-          props.enqueueSnackbar(get(err, 'message', `Connection can not be established`), {variant: "error"})
-        })
-    }
-
-    const modalNewConnectionFooter = <>
-      <Button variant="primary" type="button" onClick={saveConnection}>
-          Save
-        </Button>
-      <Button variant="primary" type="button" onClick={testConnection}>
-          Test
-      </Button>
-      <Button onClick={()=>{ setModalNewConnectionShow(false); setModalShow(true); }}>Cancel</Button>
-    </>
-
-    const modalBodyCreateConnection = () => <>
-      <Form>
-        <Form.Group className="mb-3" controlId="newConnectionName">
-          <Form.Label>Connection Name: </Form.Label>
-          <Form.Control type="text" placeholder="My First Connection" />
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="newConnectionURI">
-          <Form.Label>Connection URI: </Form.Label>
-          <Form.Control type="text" placeholder="mongodb://root:root@localhost:27017" />
-        </Form.Group>        
-      </Form>
-    </>
 
     return(
       <>        
@@ -100,6 +50,7 @@ function NavBar(props) {
         <CreateFile reference={fileOutputRefSQL}></CreateFile>
         <CreateFile reference={fileOutputRefSQML} ext={'sqml'}></CreateFile>
         <CreateFile reference={fileOutputRefJS} name={'traduction'} ext={'js'}></CreateFile>
+        <CustomSaveDialog ext={extToSave}></CustomSaveDialog>
         <Navbar bg="light" expand="lg">
           <Container>
             <Navbar.Brand>SQMongoL</Navbar.Brand>
@@ -108,38 +59,32 @@ function NavBar(props) {
               <Nav className="me-auto">
                 <NavDropdown title="File" id="basic-nav-dropdown">   
                   <NavDropdown.Item onClick={handleReadButtonClick}>Open File</NavDropdown.Item>
-                  <NavDropdown.Item onClick={() => handleSaveButtonClick(fileOutputRefSQL)}>Save File As (SQL)</NavDropdown.Item>
-                  <NavDropdown.Item onClick={() => handleSaveButtonClick(fileOutputRefSQML)}>Save File As (SQML)</NavDropdown.Item>
-                  <NavDropdown.Item onClick={() => handleSaveButtonClick(fileOutputRefJS)}>Save File As (MONGO)</NavDropdown.Item>
+                  {
+                    process.env.NEXT_PUBLIC_ENV === "WEB" ? <>
+                      <NavDropdown.Item onClick={() => handleDownloadFileButtonClick(fileOutputRefSQL)}>Download File As (SQL)</NavDropdown.Item>
+                      <NavDropdown.Item onClick={() => handleDownloadFileButtonClick(fileOutputRefSQML)}>Download File As (SQML)</NavDropdown.Item>
+                      <NavDropdown.Item onClick={() => handleDownloadFileButtonClick(fileOutputRefJS)}>Download File As (MONGO)</NavDropdown.Item>
+                    </> : <>
+                      <NavDropdown.Item onClick={() => handleSaveFileExists()}>Save File</NavDropdown.Item>
+                      <NavDropdown.Item onClick={() => handleSaveFileButtonClick("sql")}>Save File As (SQL)</NavDropdown.Item>
+                      <NavDropdown.Item onClick={() => handleSaveFileButtonClick("sqml")}>Save File As (SQML)</NavDropdown.Item>
+                      <NavDropdown.Item onClick={() => handleSaveFileButtonClick("js")}>Save File As (MONGO)</NavDropdown.Item>
+                    </>
+                  }                 
                 </NavDropdown>
                 <NavDropdown title="Connections" id="basic-nav-dropdown">
                   <NavDropdown.Item onClick={()=>setModalShow(true)}>Manage Connections</NavDropdown.Item>
                 </NavDropdown>  
                 <NavDropdown title="Work Sessions" id="basic-nav-dropdown">
-                  <NavDropdown.Item onClick={()=>setModalShow(true)}>Manage Sessions</NavDropdown.Item>
+                  <NavDropdown.Item onClick={()=>setModalManageSessionsShow(true)}>Manage Sessions</NavDropdown.Item>
                 </NavDropdown>                           
               </Nav>
             </Navbar.Collapse>
           </Container>
         </Navbar>
-        <Modal 
-            show= {modalShow} 
-            onHide = {()=>setModalShow(false)}        
-            modalFooter = {modalConnectionsFooter}
-            componentDidMount = {modalConnectionsDidMount}
-            modalTitle = {"Connections"}
-            modalBody = {() => 
-              connections.map((con, index)=><ConnectionCard key={`conCard${index}`} name={con.name} uri={con.uri} onSuccess={()=>setModalShow(false)}/>)
-            }
-        />
-        <Modal 
-            show={modalNewConnectionShow} 
-            onHide = {()=>{setModalNewConnectionShow(false); setModalShow(true);}}    
-            modalFooter = {modalNewConnectionFooter}
-            componentDidMount = {() => {}}
-            modalTitle = {"Create Connection"}
-            modalBody = {modalBodyCreateConnection}
-        />
+        <CreateConnection></CreateConnection>
+        <ViewConnections></ViewConnections>
+        <ManageSessions></ManageSessions>
       </>
     )
 }

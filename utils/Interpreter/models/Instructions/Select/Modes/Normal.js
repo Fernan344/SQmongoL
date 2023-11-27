@@ -3,7 +3,6 @@ import set from "lodash/set"
 import get from "lodash/get"
 import OrderBy from "../OrderBy/OrderBy";
 import { transformSelectParams } from "../utils/transform.util";
-import { AssignmentTurnedInSharp } from "@mui/icons-material";
 
 export default class SelectNormal extends Instruccion {
     
@@ -28,16 +27,13 @@ export default class SelectNormal extends Instruccion {
       await this.generateNormalQuery(queryExecuteParams, ast)
       const { db } = ast.getSchema();   
       const { find, sort, limit, projection } = queryExecuteParams   
-      const command = {}        
-      set(command, 'find', this.tableName)
-      if(find) set(command, 'filter', find)
-      if(sort) set(command, 'sort', sort)
-      if(limit) set(command, 'limit', limit)
-      set(command, 'projection', projection)
+      
+      let table = await db.collection(this.tableName).find(find || {});
+      table = await table.sort(sort || {});
+      table = await table.limit(limit || 100);
+      table = await table.project(projection);
 
-      const result = await db.command(command);
-      const results = get(result, 'cursor.firstBatch', [])
-
+      const results = await table.toArray();
       ast.addResult(results);
       ast.actualizaConsola(`Query was executed, returns ${results.length} fields.`);
     }
@@ -56,7 +52,7 @@ export default class SelectNormal extends Instruccion {
     }
 
     async generateNormalQuery (queryExecuteParams, ast) {      
-      const projectParams = this.selectParams === SelectType.ALL ? {} : await transformSelectParams(this.selectParams, this.tableName, AssignmentTurnedInSharp);
+      const projectParams = this.selectParams === SelectType.ALL ? {} : await transformSelectParams(this.selectParams, this.tableName, ast);
       ast.settablaGlobal(projectParams);
       
       if(get(this.queryOptions, 'where')) {
@@ -65,9 +61,9 @@ export default class SelectNormal extends Instruccion {
       } else {
         set(queryExecuteParams, 'find', {})
       }
-
+      
       set(queryExecuteParams, 'projection', projectParams)
-
+      
       if(get(this.queryOptions, 'orderBy')) {
         const orderByOptions = await (new OrderBy(0, 0, get(this.queryOptions, 'orderBy'))).exec(ast);
         set(queryExecuteParams, 'sort', orderByOptions)        

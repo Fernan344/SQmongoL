@@ -24,8 +24,8 @@ export default class CreateDatabase extends Instruccion {
         }
     }
 
-    async translate(ast) {
-        const queryParts = [`use ${this.name};\n`]
+    async translate(ast) {        
+        const queryParts = [`use ${await this.name.exec(ast)};\n`]
         ast.addTraduction(queryParts.join('.'))
     }
 }

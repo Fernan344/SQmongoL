@@ -6,6 +6,7 @@ import flat from 'flat'
 import { getObjectKeyValues } from './arrays.util';
 
 export const transformSelectParams = async (selectParams, tableName, ast) => {
+  
     const selectParamsParsed = {}
     let unnamedColumns = 0;
 
@@ -16,7 +17,7 @@ export const transformSelectParams = async (selectParams, tableName, ast) => {
         const aliasValue = await aliasTable.exec(ast);  
         set(selectParamsParsed, aliasValue, base);
       } else if(isString(base)) {
-        set(selectParamsParsed, base, ast.getFullPath(base));
+        set(selectParamsParsed, base, ast.getFullPath(base) || `$${base}`);
       } else {
         set(selectParamsParsed, unnamedColumns === 0 ? 'unnamed_column' : `unnamed_column_${unnamedColumns}`, base);
         unnamedColumns++;
