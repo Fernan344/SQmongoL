@@ -62,7 +62,7 @@ function CustomFileChooser(props) {
                 <CustomTable 
                     rows={((dirs.length && dirs[dirs.length-1].dirs)||[]).map(d => [
                         d.name, 
-                        <Button onClick={() => {navigateTo(d.name)}}><ArrowForwardIcon></ArrowForwardIcon></Button>
+                        <Button key={`button_navigate_to_${d.name}`} onClick={() => {navigateTo(d.name)}}><ArrowForwardIcon></ArrowForwardIcon></Button>
                     ])}
                     style={{
                         body: {
