@@ -22,7 +22,7 @@ export default function CustomTable(props) {
                         <TableRow style={{display: "flex"}}>
                             {
                                 columns && columns.length &&
-                                columns.map(col => <TableCell style={{fontWeight: 'bold', width: "100%", display: "flex", justifyContent: "center"}}>{col}</TableCell>)
+                                columns.map((col, i) => <TableCell key = {`table_cell_column_${i}`} style={{fontWeight: 'bold', width: "100%", display: "flex", justifyContent: "center"}}>{col}</TableCell>)
                             }
                         </TableRow>
                     </div>
@@ -31,12 +31,12 @@ export default function CustomTable(props) {
                     <div style={{width: '100%', ...(style.body||{})}}>
                         {
                             rows && rows.length &&
-                            rows.map(row => 
-                                <TableRow style={{display: "flex"}}>
+                            rows.map((row, j) => 
+                                <TableRow key={`table_row_${j}`} style={{display: "flex"}}>
                                     {
                                         row && row.length &&
-                                        row.map( cell => 
-                                            <TableCell style={{fontWeight: 'bold', width: "100%", display: "flex", justifyContent: "center"}}>{cell}</TableCell>
+                                        row.map((cell, i) => 
+                                            <TableCell key={`table_cell_row_${i}`} style={{fontWeight: 'bold', width: "100%", display: "flex", justifyContent: "center"}}>{cell}</TableCell>
                                         )
                                     }
                                 </TableRow>
