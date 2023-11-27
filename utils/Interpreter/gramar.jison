@@ -133,14 +133,17 @@
 [ \r\t]+                                                    {;}
 \n                                                          {;}
 \"[^\"]*\"|\'[^\']*\'|\`[^\`]*\`                            { yytext=yytext.substr(1,yyleng-2); return 'CADENA'; }
+
 [0-9]+"."[0-9]+\b  	                                        return 'NUMBER';
 [0-9]+\b  	                                                return 'INTEGERNUMBER';
+
 [A-Za-z"_""$"]["_"0-9A-Za-z]*("."["_"0-9A-Za-z]+)*          return 'IDENTIFICADOR';
 [A-Za-z"_""$"]["_"0-9A-Za-z]*                               return 'SIMPLEIDENTIFICADOR';
 
 
+
 <<EOF>>                                                     return 'EOF';
-.                                                           return 'INVALID'
+.                                                           return 'INVALID';
 
 /lex
 
@@ -166,8 +169,8 @@ INSTRUCCIONES :
 // GRAMATICA JSON
 
 JSONKEY: 
-    CADENA                                                  {$$ = $1;}
-|   SIMPLEIDENTIFICADOR                                     {$$ = $1;}
+    IDENTIFICADOR                                           {$$ = $1;}
+|   CADENA                                                  {$$ = $1;}
 ;
 
 JSONVALUE:
@@ -180,16 +183,16 @@ JSONPROPERTY:
 
 JSONPROPERTIES:
     JSONPROPERTIES COMA JSONPROPERTY                        {$$ = {...$1, [$3[0]]: $3[1]};}
-|   JSONPROPERTY                                            {$$ = {[$3[0]]: $3[1]};}
+|   JSONPROPERTY                                            {$$ = {[$1[0]]: $1[1]};}
 ;
 
 JSONOBJ: 
-    LLAVEIZQ JSONPROPERTIES LLAVEDER                        {$$ = new nativo.default(new Tipo.default(Tipo.DataType.JSONOBJ),$1, @1.first_line, @1.first_column);}
+    LLAVEIZQ JSONPROPERTIES LLAVEDER                        {$$ = new nativo.default(new Tipo.default(Tipo.DataType.JSONOBJ),$2, @1.first_line, @1.first_column);}
 |   LLAVEIZQ LLAVEDER                                       {$$ = new nativo.default(new Tipo.default(Tipo.DataType.JSONOBJ),{}, @1.first_line, @1.first_column);}
 ;
 
 JSONARRAYVALUES:
-    JSONARRAYVALUES COMA NATIVEEXPRESSION                   {$$ = $1.push($3);}
+    JSONARRAYVALUES COMA NATIVEEXPRESSION                   {$1.push($3); $$ = $1;}
 |   NATIVEEXPRESSION                                        {$$ = [$1];}
 ;
 
@@ -199,12 +202,12 @@ JSONARRAY:
 ;
 
 JSONARRAYOBJECTSVALUES:
-    JSONARRAYOBJECTSVALUES COMA JSONOBJ                            {$$ = $1.push($3);}
+    JSONARRAYOBJECTSVALUES COMA JSONOBJ                     {$1.push($3); $$ = $1;}
 |   JSONOBJ                                                 {$$ = [$1];}
 ;
 
 JSONARRAYOBJECTS:
-    CORIZQ JSONARRAYOBJECTSVALUES CORDER                    {$$ = new nativo.default(new Tipo.default(Tipo.DataType.JSONARR),$1, @1.first_line, @1.first_column);}
+    CORIZQ JSONARRAYOBJECTSVALUES CORDER                    {$$ = new nativo.default(new Tipo.default(Tipo.DataType.JSONARR),$2, @1.first_line, @1.first_column);}
 |   CORIZQ CORDER                                           {$$ = new nativo.default(new Tipo.default(Tipo.DataType.JSONARR),[], @1.first_line, @1.first_column);}
 ;
 
@@ -237,8 +240,8 @@ QUERYALIAS:
 ;
 
 NATIVEIDENTIFIER:
-    IDENTIFIER                                              {$$ = $1;}
-    | CADENA                                                {$$ = new nativo.default(new Tipo.default(Tipo.DataType.IDENTIFICADOR),$1, @1.first_line, @1.first_column);}
+    CADENA                                                      {$$ = new nativo.default(new Tipo.default(Tipo.DataType.CADENA),$1, @1.first_line, @1.first_column);}
+    | IDENTIFIER                                                {$$ = $1;}
 ;
 
 NATIVEEXPRESSION:
@@ -311,8 +314,8 @@ INSTRUCCION:
     | USEINS                                                {$$=$1;}
     | QUERY                                                 {$$=$1;}
     | INSERTINSTRUCTION                                     {$$=$1;}
-    | INVALID                                               {console.log("Error lexico");}
-    | error PTCOMA                                          {console.log(`Error Sintactico`);}
+    | INVALID                                               { console.error('Este es un error léxico: ' + yytext + ', en la linea: ' + yylloc.first_line + ', en la columna: ' + yylloc.first_column); }
+    | error                                                 { console.error('Este es un error sintáctico: ' + yytext + ', en la linea: ' + this._$.first_line + ', en la columna: ' + this._$.first_column); }
 ;
 
 /* CREATE INSTRUCTIONS */
@@ -487,7 +490,7 @@ DATATYPES:
 
 CREATETABLEINS:
     RESCREATE RESTABLE NATIVEIDENTIFIER 
-    PARABRE CREATEPARAMS PARCIERRA                          {$$=new createCollection.default($3, $5, @1.first_line, @1.first_column)}
+    PARABRE CREATEPARAMS PARCIERRA                          {$$=new createCollection.default($3, $5, @1.first_line, @1.first_column);}
 ;
 
 CREATEPARAMS:
@@ -518,8 +521,8 @@ CREATEOPTION:
 
 INSERTINSTRUCTION:
     RESINSERT RESINTO NATIVEIDENTIFIER PARABRE 
-    INSERTKEYS PARCIERRA RESVALUES PARABRE INSERTDATA PARCIERRA              {$$=new insertInto.default($3, $5, $9, @1.first_line, @1.first_column)}
-    | RESINSERT RESINTO NATIVEIDENTIFIER PARABRE JSONARRAYOBJECTS PARCIERRA  {$$=new insertInto.default($3, undefined, $5, @1.first_line, @1.first_column)}
+    INSERTKEYS PARCIERRA RESVALUES INSERTDATA              {$$=new insertInto.default($3, $5, $8, @1.first_line, @1.first_column);}
+    | RESINSERT RESINTO NATIVEIDENTIFIER PARABRE JSONARRAYOBJECTS PARCIERRA  {$$=new insertInto.default($3, undefined, $5, @1.first_line, @1.first_column);}
 ;
 
 INSERTKEYS:
@@ -544,13 +547,13 @@ REGISTERVALUES:
 // CREATE DATABASE INS
 
 CREATEDATABASE:
-    RESCREATE RESDATABASE NATIVEIDENTIFIER                  {$$=new createDatabase.default(@1.first_line, @1.first_column, $3)}
+    RESCREATE RESDATABASE NATIVEIDENTIFIER                  {$$=new createDatabase.default(@1.first_line, @1.first_column, $3);}
 ;
 
 //USE INS
 
 USEINS:
-    RESUSE NATIVEIDENTIFIER                                 {$$=new createDatabase.default(@1.first_line, @1.first_column, $2)}
+    RESUSE NATIVEIDENTIFIER                                 {$$=new createDatabase.default(@1.first_line, @1.first_column, $2);}
 ;
 
 // QUERY INSTRUCTION
@@ -566,13 +569,13 @@ SELECTINS:
 // PARAMS
 
 QUERYPARAMS:
-    MULTSIGN                                                {$$ = $1}
-    | LISTQUERYPARAMS                                       {$$ = $1}
+    MULTSIGN                                                {$$ = $1;}
+    | LISTQUERYPARAMS                                       {$$ = $1;}
 ;
 
 LISTQUERYPARAMS:
     LISTQUERYPARAMS COMA QUERYPARAM                         {$1.push($3); $$=$1;}
-    | QUERYPARAM                                            {$$ = [$1]}
+    | QUERYPARAM                                            {$$ = [$1];}
 ;
 
 QUERYPARAM:
@@ -583,7 +586,7 @@ QUERYPARAM:
 // JOIN OPTIONS BUILD
 
 OPTIONFROMJOIN:
-    JOINISTRUCTS OPTIONFROMWHERE                            {$$ = {...$2, join: $1, isAggregate: true}}                 
+    JOINISTRUCTS OPTIONFROMWHERE                            {$$ = {...$2, join: $1, isAggregate: true};}                 
     | OPTIONFROMWHERE                                       {$$ = {...$1};}
 ;
 
@@ -600,15 +603,15 @@ JOINISTRUCT:
 // WHERE OPTIONS BUILD
 
 OPTIONFROMWHERE:
-    RESWHERE LOGICEXPRESION OPTIONFROMGROUPBY               {$$={...$3, where: $2}}
-    | OPTIONFROMGROUPBY                                     {$$={...$1}}
+    RESWHERE LOGICEXPRESION OPTIONFROMGROUPBY               {$$={...$3, where: $2};}
+    | OPTIONFROMGROUPBY                                     {$$={...$1};}
 ;
 
 // GROUP BY OPTIONS BUILD
 
 OPTIONFROMGROUPBY:
-    RESGROUP RESBY GROUPBYPARAMS OPTIONFROMORDERBY          {$$={...$4, groupBy: new groupBy.default(@1.first_line, @1.first_column, $3), isAggregate: true}}
-    | OPTIONFROMORDERBY                                     {$$={...$1}}
+    RESGROUP RESBY GROUPBYPARAMS OPTIONFROMORDERBY          {$$={...$4, groupBy: new groupBy.default(@1.first_line, @1.first_column, $3), isAggregate: true};}
+    | OPTIONFROMORDERBY                                     {$$={...$1};}
 ;
 
 GROUPBYPARAMS:
@@ -619,8 +622,8 @@ GROUPBYPARAMS:
 // ORDER BY OPTIONS BUILD
 
 OPTIONFROMORDERBY:
-    RESORDER RESBY ORDERBYPARAMS OPTIONFROMLIMIT            {$$={...$4, orderBy: $3}}
-    | OPTIONFROMLIMIT                                       {$$={...$1}}
+    RESORDER RESBY ORDERBYPARAMS OPTIONFROMLIMIT            {$$={...$4, orderBy: $3};}
+    | OPTIONFROMLIMIT                                       {$$={...$1};}
 ;
 
 ORDERBYPARAMS:
@@ -641,6 +644,6 @@ ORDERVALUE:
 // LIMIT OPTION BUILD
 
 OPTIONFROMLIMIT:
-    RESLIMIT NATIVEIDENTIFIER                               {$$={limit:$2}}   
-    |                                                       {$$={}}            
+    RESLIMIT NATIVEEXPRESSION                               {$$={limit:$2};}   
+    |                                                       {$$={};}            
 ;

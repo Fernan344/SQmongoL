@@ -48,14 +48,14 @@ export default class Nativo extends Expresion {
     }else if(this.tipo.getTipo() === DataType.JSONARR){
       const values = []
       await PromiseB.each(this.valor, async (val) => {
-        values.push(val.exec(ast));
+        values.push(await val.exec(ast));
       })
       return values;
     }else if(this.tipo.getTipo() === DataType.JSONOBJ){
       const keys = Object.keys(this.valor);
       const obj = {}
       await PromiseB.each(keys, async (k) => {
-        set(obj, k, await get(this.valor. k).exec(ast));
+        set(obj, k, await get(this.valor, k).exec(ast));
       })
       return obj;
     }

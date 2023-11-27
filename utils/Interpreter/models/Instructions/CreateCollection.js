@@ -20,11 +20,11 @@ export default class CreateDatabase extends Instruccion {
 
     async translate(ast) {
         const {options, indexes, primaryKeys} = await this.execCreateCollection(ast);
-        
-        ast.addTraduction(`db.createCollection('${this.collectionName}', ${JSON.stringify(options, null, 2)});`)
+        const collectionName = await this.collectionName.exec(ast)
+        ast.addTraduction(`db.createCollection('${collectionName}', ${JSON.stringify(options, null, 2)});`)
         
         const createIndex = (key) => [
-            `db.getCollection("${this.collectionName}").`,
+            `db.getCollection("${collectionName}").`,
             `createIndex(`,
             `${JSON.stringify(key)},`,
             `{ unique: true }`
@@ -66,8 +66,9 @@ export default class CreateDatabase extends Instruccion {
         const indexes = []
         const primaryKeys = []
         await PromiseB.each(this.parameters, async (p) => { 
-            set(properties, p.key, p.type) 
-            if(get(p, 'options.required')) requiredFields.push(get(p, 'key'))
+            const key = await get(p, 'key').exec(ast)
+            set(properties, key, p.type) 
+            if(get(p, 'options.required')) requiredFields.push(key)
             if(get(p, 'options.default')) set(properties, p.key, await p.options.default.exec(ast))
             if(get(p, 'options.unique')) indexes.push(p.key)
             if(get(p, 'options.index')) primaryKeys.push(p.key)

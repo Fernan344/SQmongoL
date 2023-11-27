@@ -11,12 +11,16 @@ export default async function parse (req, res) {
     const connection = onlyTranslate ? undefined : await getConnection(uri); 
     const ast = new Three(parser.parse(code), onlyTranslate, connection, database, uri);    
     for (let i of ast.getinstrucciones()) {  
-      ast.reInit();   
-      await i.exec(ast)
+        try {
+          ast.reInit();   
+          await i.exec(ast)
+        } catch (e) {
+          ast.actualizaConsola(`Semantic error at line ${i.linea}, column ${i.columna}: expected ${e}`)
+        }
     }    
     res.status(200).json({traduction: ast.getTraduction(), results: ast.getResults(), console: ast.getconsola()})
   }catch (err){
-    console.error(`Error at line ${err.line}, column ${err.column}: expected ${err}`);
+    console.error(`Unexpected error: expected ${err}`);
     errorMidleware(err, req, res)
   }
 }

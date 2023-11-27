@@ -24,7 +24,7 @@ export default class InsertInto extends Instruccion {
     async translate(ast) {
         const {values} = await this.execInsertInto(ast)
         const insertValue = JSON.stringify((values.length === 1 ? values[0] : values), null, 2);
-        const traductionParts = [`db.getCollection("${this.table}").`,
+        const traductionParts = [`db.getCollection("${await this.table.exec(ast)}").`,
             `${values.length === 1 ? 'insertOne(' : 'insertMany('}`,
             insertValue,
             `);`
@@ -66,7 +66,7 @@ export default class InsertInto extends Instruccion {
         const values = await PromiseB.map(this.registers, async (reg) => {
             let object = {};
             await PromiseB.each(reg, async (value, i) => {
-                const key = get(this.tableKeys, i)
+                const key = await get(this.tableKeys, i).exec(ast)
                 object = {
                     ...object,
                     [`${key}`]: this.convertValue(get(validator, key, {}), await value.exec(ast))

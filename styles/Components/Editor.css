@@ -3,6 +3,7 @@
     display: flex;
     position: relative;
     flex-direction: column;
+    justify-content: center;
 }
 
 .chat_header {
@@ -30,6 +31,7 @@
     color: #444;
     /* Use flexbox */
     display: flex;
+    justify-content: center;
 }
   
 .boxA, .boxB {
