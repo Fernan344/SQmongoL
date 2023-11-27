@@ -1,15 +1,16 @@
-import { useState } from 'react'
+import React, { createContext, useState, useContext, useEffect } from 'react';
 import { textDefaultNewTab, makeData, translateModes } from '../utils/config/default'
 import axios from 'axios'
 import get from 'lodash/get'
 import set from 'lodash/set'
 
+const StateContext = createContext();
+
 export const useSQML = () => {
     const [ resources, setResources ] = useState([])
     const [ text, setText ] = useState(textDefaultNewTab);
-    const [ tabs, setTabs ] = useState(makeData(1));
+    const [ tabs, setTabs ] = useState([]);
     const [ activeIndex, setActiveIndex ] = useState(0);
-    const [ myTabs, setMyTabs ] = useState([])
     const [ connections, setConnections ] = useState([])
     const [ modalShow, setModalShow] = useState(false)
     const [ translateMode, setTranslateMode ] = useState(translateModes.OnlyTranslate)
@@ -21,25 +22,34 @@ export const useSQML = () => {
     const [ myDB, setMyDB] = useState("");
     const [ queryResults, setQueryResults ] = useState([])
     const [ log, setLog ] = useState('')   
+
+    useEffect(() => {
+      handleChangeCode(get(tabs, `${activeIndex}.content`, ''))
+    }, [activeIndex])
     
     const handleClickGetAll = () => {
       parseCode(text)
+    }
+
+    const initTabs = () => {
+      const existsTabs = localStorage.getItem('tabs');
+      existsTabs ? setTabs(JSON.parse(existsTabs)) : handleExtraButton();
     }
 
     const handleClickGetSelected = (editorRef) => {
       parseCode(editorRef.current.getModel().getValueInRange(editorRef.current.getSelection()));
     }
 
-    const handleChangeCode = (evt) => {
+    const handleChangeCode = (evt) => { 
+      if(!tabs.length) return;    
+      set(tabs, `${activeIndex}.content`, evt)
+      localStorage.setItem('tabs', JSON.stringify(tabs));
       setText(evt)
     }
 
     const handleExtraButton = (evt) => {
         setActiveIndex(tabs.length)
-        setTabs([...tabs, {
-            title: `New File *`,
-            content: textDefaultNewTab
-        }])
+        setTabs([...tabs, ...makeData(1)])
     }  
 
     const handleDeleteTabButton = (evt) => {
@@ -63,9 +73,7 @@ export const useSQML = () => {
           setText(get(tabs, `${activeIndex}.content`, ''))
           break;
         default:
-          set(tabs, `${activeIndex}.content`, text)
           setActiveIndex(newValue);
-          setText(get(tabs, `${newValue}.content`, ''))
           break;
       }          
     }
@@ -98,7 +106,6 @@ export const useSQML = () => {
         text,
         tabs,
         activeIndex,
-        myTabs,
         connections,
         modalShow,
         modalNewConnectionShow,
@@ -115,7 +122,6 @@ export const useSQML = () => {
         setText,
         setTabs,
         setActiveIndex,
-        setMyTabs,
         setConnections,
         setModalShow,
         setModalNewConnectionShow,
@@ -132,6 +138,15 @@ export const useSQML = () => {
         handleClickGetSelected,
         handleChangeCode,
         handleExtraButton,
-        handleDeleteTabButton
+        handleDeleteTabButton,
+        initTabs
     }
 }
+
+export const StateProvider = ({ children }) => {
+  return <StateContext.Provider value={useSQML()}>
+    {children}
+  </StateContext.Provider>
+}
+
+export const useStateContext = () => useContext(StateContext);

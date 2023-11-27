@@ -4,10 +4,11 @@ import Button from 'react-bootstrap/Button';
 import get from "lodash/get"
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { withSnackbar } from "notistack";
+import { useStateContext } from "../hooks/useSQML";
 
 function BaseDatos(props) {
 
-    const {getResources, setMyDB, myURI} = props.states;
+    const {getResources, setMyDB, myURI} = useStateContext();
 
     const handleUpdateDataBase = () => {
         axios.put('/api/connect', {dbName: get(props, 'message', ''), uri: myURI})
@@ -23,13 +24,13 @@ function BaseDatos(props) {
 
     return(
         <div className="BaseDatosDiv">
-            <div class="DBcard">                
-                <div class="dbTitleCard">
-                    <div class="textTitle">
+            <div className="DBcard">                
+                <div className="dbTitleCard">
+                    <div className="textTitle">
                         {get(props, 'message', '').length < 10 ? get(props, 'message', '') : `${get(props, 'message', '').substr(0,10)}...`}
                     </div>
                 </div>
-                <div class="dbActionButton">
+                <div className="dbActionButton">
                     <Button style={{height: "1.5rem", justifyContent: "center", alignContent: "center", alignItems: "center"}}
                         onClick = {handleUpdateDataBase}
                         >

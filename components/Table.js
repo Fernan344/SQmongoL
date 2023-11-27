@@ -1,5 +1,4 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
@@ -13,6 +12,7 @@ import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import isObject from 'lodash/isObject';
+import toString from 'lodash/toString';
 import get from 'lodash/get';
 
 function Row(props) {
@@ -59,7 +59,7 @@ function Row(props) {
                     if(isObject(get(row, keyRow))) return <Row name = {keyRow} row =  {get(row, keyRow) } />
                     return <TableRow key={get(row, '_id', 0)}>
                       <TableCell>{keyRow}</TableCell>
-                      <TableCell align="left">{get(row, keyRow).toString()}</TableCell>
+                      <TableCell align="left">{toString(get(row, keyRow, ''))}</TableCell>
                       <TableCell align="left">{Math.round(0 * 100 * 100) / 100}</TableCell>
                     </TableRow>
                   })}
@@ -75,7 +75,7 @@ function Row(props) {
 
 export default function CollapsibleTable(props) {
   const {key, rows} = props;  
-  const [mini, setMini] = React.useState(false);
+  const [mini, setMini] = React.useState(true);
   return (
     <>
      <div className="form-check">

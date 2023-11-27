@@ -4,9 +4,10 @@ import BaseDatos from "./BaseDatos"
 import Button from 'react-bootstrap/Button';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import get from 'lodash/get'
+import { useStateContext } from "../hooks/useSQML";
 
 function ChatBar(props) {
-    const {resources, dbs, getResources} = props.states
+    const {resources, dbs, getResources} = useStateContext()
     return(
         <div className="chatBar">
              <div className="chatBar_header">
@@ -15,7 +16,7 @@ function ChatBar(props) {
             <div className="dbsBar">
                 {
                     (dbs||[]).map(db => {
-                        return <BaseDatos states = {props.states} key="" message={get(db, 'name')}/>
+                        return <BaseDatos key="" message={get(db, 'name')}/>
                     })
                 }
             </div>

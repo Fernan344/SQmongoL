@@ -11,15 +11,21 @@ import get from 'lodash/get';
 import Modal from './Modal';
 import ConnectionCard from './ConnectionCard';
 import {withSnackbar} from 'notistack'
+import { useStateContext } from "../hooks/useSQML";
 
 function NavBar(props) {
-    const {modalShow, setModalShow, connections, setConnections, modalNewConnectionShow, setModalNewConnectionShow } = props.states;
+    const {
+      modalShow, setModalShow, 
+      connections, setConnections, 
+      modalNewConnectionShow, setModalNewConnectionShow 
+    } = useStateContext();
 
     const modalConnectionsFooter = 
     <>
       <Button onClick={()=>setModalShow(false)}>Close</Button>
       <Button onClick={()=>{ setModalShow(false); setModalNewConnectionShow(true); }}>Crate New</Button>
     </>
+
     const modalConnectionsDidMount = () => {
       const cons = JSON.parse(window.localStorage.getItem('connections'))
       setConnections(cons && cons.length ? cons : [])
@@ -88,26 +94,24 @@ function NavBar(props) {
                 </NavDropdown>
                 <NavDropdown title="Connections" id="basic-nav-dropdown">
                   <NavDropdown.Item onClick={()=>setModalShow(true)}>Manage Connections</NavDropdown.Item>
-                </NavDropdown>            
+                </NavDropdown>                           
               </Nav>
             </Navbar.Collapse>
           </Container>
         </Navbar>
         <Modal 
-            show={modalShow} 
-            onHide = {()=>setModalShow(false)}    
-            states = {props.states}       
+            show= {modalShow} 
+            onHide = {()=>setModalShow(false)}        
             modalFooter = {modalConnectionsFooter}
             componentDidMount = {modalConnectionsDidMount}
             modalTitle = {"Connections"}
             modalBody = {() => 
-              connections.map((con, index)=><ConnectionCard key={`conCard${index}`} states={props.states} name={con.name} uri={con.uri} onSuccess={()=>setModalShow(false)}/>)
+              connections.map((con, index)=><ConnectionCard key={`conCard${index}`} name={con.name} uri={con.uri} onSuccess={()=>setModalShow(false)}/>)
             }
         />
         <Modal 
             show={modalNewConnectionShow} 
             onHide = {()=>{setModalNewConnectionShow(false); setModalShow(true);}}    
-            states = {props.states}       
             modalFooter = {modalNewConnectionFooter}
             componentDidMount = {() => {}}
             modalTitle = {"Create Connection"}

@@ -3,9 +3,10 @@ import { withSnackbar } from 'notistack';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import get from 'lodash/get';
+import { useStateContext } from '../hooks/useSQML';
 
 function ConnectionCard(props) {
-    const {setDbs, setCharge, setMyURI} = props.states
+    const {setDbs, setCharge, setMyURI} = useStateContext()
 
     const handlerConnect = () => {
         setCharge(true)

@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Form from 'react-bootstrap/Form';
 import Table from './Table'
+import { useStateContext } from '../hooks/useSQML';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -42,7 +43,7 @@ function a11yProps(index) {
 
 export default function BasicTabs(props) {
   const [value, setValue] = React.useState(0);  
-  const { queryResults, log } = props.states;
+  const { queryResults, log } = useStateContext();
 
   React.useEffect(() => {setValue(0)}, [queryResults])
 
