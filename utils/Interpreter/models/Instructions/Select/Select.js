@@ -1,7 +1,7 @@
 import has from "lodash/has";
 import { Instruccion } from "../Abstract/Instruction"
-import SelectAggregate from "./Modes/aggregate";
-import SelectNormal from "./Modes/normal";
+import SelectAggregate from "./Modes/Aggregate";
+import SelectNormal from "./Modes/Normal";
 import omit from "lodash/omit";
 
 export default class Select extends Instruccion {
