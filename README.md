@@ -1,5 +1,5 @@
 <h1>TEST this app</h1>
-<h3>link: <a href="https://sqmongol-fernan344.vercel.app/">SQMongoL APP</a>.</h3> 
+<h3>link: <a href="https://sqmongol.vercel.app/">SQMongoL APP</a>.</h3> 
 
 <h1> GRAMMAR </h1>
 <h2> Reserved Words </h2>
