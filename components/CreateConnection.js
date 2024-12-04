@@ -22,7 +22,7 @@ function CreateConnection (props) {
         const name = document.getElementById("newConnectionName").value
         const uri = document.getElementById("newConnectionURI").value
         
-        if(connections.filter(c => c.name === name)) {
+        if(connections.find(c => c.name === name)) {
           showErrors(props, "Connection name is already exists")
           return
         }
